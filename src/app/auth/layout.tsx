@@ -1,3 +1,4 @@
+import React from 'react';
 import NavbarLogoOnly from '@/components/NavbarLogoOnly';
 import Footer from '@/components/Footer';
 

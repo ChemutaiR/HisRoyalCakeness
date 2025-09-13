@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Pencil, Trash2, Plus, Calendar, Tag, Users, TrendingUp } from 'lucide-react';
+import { Pencil, Trash2, Plus } from 'lucide-react';
 
 export default function Promotions() {
   const [editingPromotion, setEditingPromotion] = useState<any>(null);
@@ -153,9 +153,9 @@ export default function Promotions() {
     setEditingPromotion(promotion);
   };
 
-  const handleDelete = (id: string) => {
+  const handleDelete = () => {
     // Handle delete logic here
-    console.log('Delete promotion with id:', id);
+    // console.log('Delete promotion');
   };
 
   const handleAddPromotion = () => {
@@ -241,7 +241,7 @@ export default function Promotions() {
                       <Pencil className="w-4 h-4" />
                     </button>
                     <button 
-                      onClick={() => handleDelete(promotion.id)}
+                      onClick={handleDelete}
                       className="text-red-600 hover:text-red-900" 
                       title="Delete"
                     >

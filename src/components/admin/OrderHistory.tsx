@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Calendar, Clock, Package, CheckCircle, XCircle } from 'lucide-react';
+import { Package, CheckCircle, XCircle } from 'lucide-react';
 
 export default function OrderHistory() {
   const [selectedOrder, setSelectedOrder] = useState<any>(null);

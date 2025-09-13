@@ -41,14 +41,14 @@ const Navbar = () => {
           {/* Logo */}
           <Link href="/" className="flex-shrink-0 flex items-center">
             <Image
-              src="/logo2.svg"
+              src="/logo3.png"
               alt="His Royal Cakeness Logo"
               width={280}
               height={70}
               className="h-14 w-auto"
               priority
             />
-            <span className="ml-4 text-white text-2xl font-pacifico">His Royal Cakeness</span>
+            <span className="ml-4 text-white text-lg font-pacifico">His Royal Cakeness</span>
           </Link>
 
           {/* Navigation Icons */}

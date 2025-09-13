@@ -1,11 +1,12 @@
 'use client';
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Upload, X, Lock, Image as ImageIcon } from 'lucide-react';
 
 interface ImageUploaderProps {
   isAuthenticated: boolean;
   uploadedImages: string[];
+  // eslint-disable-next-line no-unused-vars
   onImagesChange: (images: string[]) => void;
 }
 
@@ -115,6 +116,7 @@ export default function ImageUploader({ isAuthenticated, uploadedImages, onImage
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {uploadedImages.map((image, index) => (
               <div key={index} className="relative group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={image}
                   alt={`Reference ${index + 1}`}

@@ -16,7 +16,7 @@ module.exports = {
       },
       fontFamily: {
         'work-sans': ['var(--font-work-sans)'],
-        'pacifico': ['Pacifico', 'cursive'],
+        'pacifico': ['var(--font-pacifico)', 'cursive'],
       },
     },
   },

@@ -9,6 +9,7 @@ interface Size {
 interface SizeSelectorProps {
   sizes: Size[];
   selectedSize: Size | null;
+  // eslint-disable-next-line no-unused-vars
   onSizeChange: (size: Size) => void;
 }
 
@@ -21,19 +22,19 @@ export default function SizeSelector({ sizes, selectedSize, onSizeChange }: Size
           <button
             key={size.size}
             onClick={() => onSizeChange(size)}
-            className={`p-4 border rounded-lg text-left transition-all duration-200 ${
+            className={`p-3 border rounded-lg text-left transition-all duration-200 ${
               selectedSize?.size === size.size
                 ? 'border-[#c7b8ea] bg-[#c7b8ea]/5 shadow-md'
                 : 'border-gray-300 hover:border-[#c7b8ea] hover:bg-gray-50'
             }`}
           >
-            <div className="font-semibold text-gray-900">{size.size}</div>
-            <div className="text-sm text-gray-600 mb-2">{size.servings} servings</div>
-            <div className="font-bold text-lg text-[#c7b8ea]">
+            <div className="font-semibold text-gray-900 text-sm">{size.size}</div>
+            <div className="text-xs text-gray-600 mb-1">{size.servings} servings</div>
+            <div className="font-bold text-base text-[#c7b8ea]">
               KES {size.price.toLocaleString()}
             </div>
             {selectedSize?.size === size.size && (
-              <div className="mt-2 text-xs text-[#c7b8ea] font-medium">✓ Selected</div>
+              <div className="mt-1 text-xs text-[#c7b8ea] font-medium">✓ Selected</div>
             )}
           </button>
         ))}

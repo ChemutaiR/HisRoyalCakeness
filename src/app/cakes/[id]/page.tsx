@@ -11,6 +11,7 @@ import ImageUploader from '@/components/CakeCustomizer/ImageUploader';
 import CustomizationSummary from '@/components/CakeCustomizer/CustomizationSummary';
 import AddToCartButton from '@/components/CakeCustomizer/AddToCartButton';
 import ContainerTypeSelector from '@/components/CakeCustomizer/ContainerTypeSelector';
+import Reviews from '@/components/CakeCustomizer/Reviews';
 import { ArrowLeft, Star } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -1039,7 +1040,7 @@ export default function CakeDetailPage() {
   const [selectedContainerType, setSelectedContainerType] = useState<ContainerType | null>(null);
   const [customNotes, setCustomNotes] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
-  const [isAuthenticated, setIsAuthenticated] = useState(false); // TODO: Get from auth context
+  const [isAuthenticated] = useState(false); // TODO: Get from auth context
 
   const cake = cakes.find(c => c.id === cakeId);
 
@@ -1121,6 +1122,13 @@ export default function CakeDetailPage() {
             <ContainerTypeSelector 
               selectedContainerType={selectedContainerType}
               onContainerTypeChange={setSelectedContainerType}
+            />
+
+            {/* Reviews Section */}
+            <Reviews 
+              cakeId={cake.id}
+              cakeName={cake.name}
+              isAuthenticated={isAuthenticated}
             />
           </div>
           

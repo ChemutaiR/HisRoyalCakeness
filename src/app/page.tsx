@@ -2,16 +2,11 @@
 
 import { useRouter } from 'next/navigation';
 import Navbar from '@/components/Navbar';
-import Image from 'next/image';
 import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 
 const primaryButton =
   'bg-[#c7b8ea] text-black text-base px-8 py-3 rounded-full font-semibold transition-colors hover:bg-[#c7b8ea]/80 shadow';
-const secondaryButton =
-  'bg-white text-black text-base border border-[#c7b8ea] px-8 py-3 rounded-full font-semibold transition-colors hover:bg-[#c7b8ea] hover:text-black';
-const cardPrimaryButton =
-  'bg-[#c7b8ea] text-black text-base px-4 py-2 rounded-full font-semibold transition-colors hover:bg-[#c7b8ea]/80 shadow';
 
 export default function Page() {
   const router = useRouter();
@@ -76,7 +71,14 @@ export default function Page() {
                 size: '0.5 kg',
               },
             ].map((cake) => (
-              <ProductCard key={cake.id} {...cake} />
+              <ProductCard 
+                key={cake.id} 
+                id={cake.id}
+                name={cake.name}
+                description={cake.description}
+                imageUrl={cake.imageUrl}
+                price={cake.price}
+              />
             ))}
           </div>
         </div>

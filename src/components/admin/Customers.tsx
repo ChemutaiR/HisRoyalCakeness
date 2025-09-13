@@ -1,13 +1,15 @@
 "use client";
 
 import { useState } from 'react';
-import { Pencil, Trash2, Plus, Mail, Phone, Calendar, User } from 'lucide-react';
+import { Pencil, X, Shield, ShieldOff, Trash2, Search } from 'lucide-react';
 
 export default function Customers() {
   const [editingCustomer, setEditingCustomer] = useState<any>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [activeTab, setActiveTab] = useState<'active' | 'deactivated'>('active');
+  const [searchTerm, setSearchTerm] = useState('');
 
-  const customers = [
+  const [customers, setCustomers] = useState([
     {
       id: '#1001',
       name: 'John Doe',
@@ -17,7 +19,9 @@ export default function Customers() {
       status: 'Active',
       orders: 5,
       totalSpent: 12500,
-      avatar: 'JD'
+      avatar: 'JD',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1002',
@@ -28,7 +32,9 @@ export default function Customers() {
       status: 'Active',
       orders: 3,
       totalSpent: 8900,
-      avatar: 'JS'
+      avatar: 'JS',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1003',
@@ -39,7 +45,9 @@ export default function Customers() {
       status: 'Pending',
       orders: 1,
       totalSpent: 3200,
-      avatar: 'MJ'
+      avatar: 'MJ',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1004',
@@ -50,7 +58,9 @@ export default function Customers() {
       status: 'Inactive',
       orders: 0,
       totalSpent: 0,
-      avatar: 'SW'
+      avatar: 'SW',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1005',
@@ -61,7 +71,9 @@ export default function Customers() {
       status: 'Active',
       orders: 8,
       totalSpent: 21500,
-      avatar: 'DB'
+      avatar: 'DB',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1006',
@@ -72,7 +84,9 @@ export default function Customers() {
       status: 'Active',
       orders: 2,
       totalSpent: 6400,
-      avatar: 'ED'
+      avatar: 'ED',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1007',
@@ -83,7 +97,9 @@ export default function Customers() {
       status: 'Pending',
       orders: 1,
       totalSpent: 2800,
-      avatar: 'RM'
+      avatar: 'RM',
+      isDeactivated: false,
+      isBlacklisted: false
     },
     {
       id: '#1008',
@@ -94,9 +110,37 @@ export default function Customers() {
       status: 'Active',
       orders: 4,
       totalSpent: 11200,
-      avatar: 'LG'
+      avatar: 'LG',
+      isDeactivated: false,
+      isBlacklisted: false
+    },
+    {
+      id: '#1009',
+      name: 'Tom Anderson',
+      email: 'tom.anderson@email.com',
+      phone: '+254 700 901 234',
+      joinDate: '2024-01-05',
+      status: 'Deactivated',
+      orders: 2,
+      totalSpent: 4500,
+      avatar: 'TA',
+      isDeactivated: true,
+      isBlacklisted: false
+    },
+    {
+      id: '#1010',
+      name: 'Maria Rodriguez',
+      email: 'maria.rodriguez@email.com',
+      phone: '+254 700 012 345',
+      joinDate: '2024-01-08',
+      status: 'Blacklisted',
+      orders: 0,
+      totalSpent: 0,
+      avatar: 'MR',
+      isDeactivated: true,
+      isBlacklisted: true
     }
-  ];
+  ]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -105,6 +149,10 @@ export default function Customers() {
       case 'Pending':
         return 'bg-yellow-100 text-yellow-800';
       case 'Inactive':
+        return 'bg-red-100 text-red-800';
+      case 'Deactivated':
+        return 'bg-gray-100 text-gray-800';
+      case 'Blacklisted':
         return 'bg-red-100 text-red-800';
       default:
         return 'bg-gray-100 text-gray-800';
@@ -121,33 +169,115 @@ export default function Customers() {
     setEditingCustomer(customer);
   };
 
-  const handleDelete = (id: string) => {
-    // Handle delete logic here
-    console.log('Delete customer with id:', id);
+  const handleDeactivate = (id: string) => {
+    setCustomers(prev => prev.map(customer => 
+      customer.id === id 
+        ? { ...customer, isDeactivated: true, status: 'Deactivated' }
+        : customer
+    ));
   };
 
-  const handleAddCustomer = () => {
-    setShowAddModal(true);
+  const handleBlacklist = (id: string) => {
+    setCustomers(prev => prev.map(customer => 
+      customer.id === id 
+        ? { ...customer, isDeactivated: true, isBlacklisted: true, status: 'Blacklisted' }
+        : customer
+    ));
   };
+
+  const handleReactivate = (id: string) => {
+    setCustomers(prev => prev.map(customer => 
+      customer.id === id 
+        ? { ...customer, isDeactivated: false, isBlacklisted: false, status: 'Active' }
+        : customer
+    ));
+  };
+
+  // const handleAddCustomer = () => {
+  //   setShowAddModal(true);
+  // };
+
+  // Filter customers based on active tab and search term
+  const filterCustomers = (customerList: any[]) => {
+    if (!searchTerm) return customerList;
+    
+    return customerList.filter(customer => 
+      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      customer.phone.includes(searchTerm) ||
+      customer.id.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+  };
+
+  const activeCustomers = filterCustomers(customers.filter(customer => !customer.isDeactivated));
+  const deactivatedCustomers = filterCustomers(customers.filter(customer => customer.isDeactivated));
 
   return (
     <div className="py-8">
       <h2 className="text-2xl font-bold mb-2">Customer Management</h2>
       <div className="flex justify-end mb-4">
-        <button 
-          onClick={handleAddCustomer}
-          className="flex items-center gap-2 bg-[#c7b8ea] text-black text-base font-semibold px-4 py-2 rounded-full shadow hover:bg-[#c7b8ea]/80 transition-colors"
-        >
-          <Plus className="w-4 h-4" />
-          Add Customer
-        </button>
       </div>
       <p className="text-gray-600 text-base mb-8">View and manage your customer accounts here.</p>
+      
+      {/* Search and Tab Navigation */}
+      <div className="mb-6">
+        {/* Search Bar */}
+        <div className="mb-4">
+          <div className="relative">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <Search className="h-5 w-5 text-gray-400" />
+            </div>
+            <input
+              type="text"
+              placeholder="Search customers by name, email, phone, or ID..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              className="block w-full pl-10 pr-3 py-2 border-b border-gray-300 bg-transparent placeholder-gray-500 focus:outline-none focus:placeholder-gray-400 focus:border-[#c7b8ea] sm:text-sm"
+            />
+            {searchTerm && (
+              <button
+                onClick={() => setSearchTerm('')}
+                className="absolute inset-y-0 right-0 pr-3 flex items-center"
+              >
+                <X className="h-5 w-5 text-gray-400 hover:text-gray-600" />
+              </button>
+            )}
+          </div>
+        </div>
+        
+        {/* Tab Navigation */}
+        <div className="border-b border-gray-200">
+          <nav className="-mb-px flex space-x-8">
+            <button
+              onClick={() => setActiveTab('active')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'active'
+                  ? 'border-[#c7b8ea] text-[#c7b8ea]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Active Customers ({activeCustomers.length})
+            </button>
+            <button
+              onClick={() => setActiveTab('deactivated')}
+              className={`py-2 px-1 border-b-2 font-medium text-sm ${
+                activeTab === 'deactivated'
+                  ? 'border-[#c7b8ea] text-[#c7b8ea]'
+                  : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
+              }`}
+            >
+              Deactivated Customers ({deactivatedCustomers.length})
+            </button>
+          </nav>
+        </div>
+      </div>
       
       {/* Customer Management Table */}
       <div className="bg-white rounded-lg shadow-lg overflow-hidden">
         <div className="bg-gray-50 px-6 py-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-800">Customer Accounts</h3>
+          <h3 className="text-lg font-semibold text-gray-800">
+            {activeTab === 'active' ? 'Active Customer Accounts' : 'Deactivated Customer Accounts'}
+          </h3>
         </div>
         <div className="overflow-x-auto">
           <table className="w-full">
@@ -164,7 +294,7 @@ export default function Customers() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {customers.map(customer => (
+              {(activeTab === 'active' ? activeCustomers : deactivatedCustomers).map(customer => (
                 <tr key={customer.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -197,13 +327,32 @@ export default function Customers() {
                     >
                       <Pencil className="w-4 h-4" />
                     </button>
-                    <button 
-                      onClick={() => handleDelete(customer.id)}
-                      className="text-red-600 hover:text-red-900" 
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                    {activeTab === 'active' ? (
+                      <>
+                        <button 
+                          onClick={() => handleDeactivate(customer.id)}
+                          className="text-orange-600 hover:text-orange-900" 
+                          title="Deactivate"
+                        >
+                          <ShieldOff className="w-4 h-4" />
+                        </button>
+                        <button 
+                          onClick={() => handleBlacklist(customer.id)}
+                          className="text-red-600 hover:text-red-900" 
+                          title="Blacklist"
+                        >
+                          <Shield className="w-4 h-4" />
+                        </button>
+                      </>
+                    ) : (
+                      <button 
+                        onClick={() => handleReactivate(customer.id)}
+                        className="text-green-600 hover:text-green-900" 
+                        title="Reactivate"
+                      >
+                        <Shield className="w-4 h-4" />
+                      </button>
+                    )}
                   </td>
                 </tr>
               ))}

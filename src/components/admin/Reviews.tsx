@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from 'react';
-import { Pencil, Trash2, Star, MessageSquare, CheckCircle, XCircle, Flag } from 'lucide-react';
+import { Star, MessageSquare, CheckCircle, XCircle, Flag } from 'lucide-react';
 
 export default function Reviews() {
   const [selectedReview, setSelectedReview] = useState<any>(null);
@@ -178,14 +178,16 @@ export default function Reviews() {
     setShowReplyModal(true);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleFeature = (reviewId: string) => {
     // Handle feature logic here
-    console.log('Feature review:', reviewId);
+    // console.log('Feature review:', reviewId);
   };
 
+  // eslint-disable-next-line no-unused-vars
   const handleFlag = (reviewId: string) => {
     // Handle flag logic here
-    console.log('Flag review:', reviewId);
+    // console.log('Flag review:', reviewId);
   };
 
   const closeReplyModal = () => {
@@ -317,11 +319,11 @@ export default function Reviews() {
                   </td>
                   <td className="px-6 py-4">
                     <div className="text-sm text-gray-900 max-w-xs">
-                      "{review.review}"
+                      &quot;{review.review}&quot;
                     </div>
                     {review.response && (
                       <div className="text-sm text-blue-600 mt-1 italic">
-                        Response: "{review.response}"
+                        Response: &quot;{review.response}&quot;
                       </div>
                     )}
                   </td>
@@ -400,7 +402,7 @@ export default function Reviews() {
                   </div>
                   <span className="ml-2 text-sm text-gray-500">{selectedReview.rating}.0</span>
                 </div>
-                <p className="text-gray-700 italic">"{selectedReview.review}"</p>
+                <p className="text-gray-700 italic">&quot;{selectedReview.review}&quot;</p>
               </div>
               
               <div>

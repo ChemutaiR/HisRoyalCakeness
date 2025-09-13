@@ -9,6 +9,7 @@ interface CreamOption {
 interface CreamSelectorProps {
   options: CreamOption[];
   selectedCream: CreamOption | null;
+  // eslint-disable-next-line no-unused-vars
   onCreamChange: (cream: CreamOption) => void;
 }
 

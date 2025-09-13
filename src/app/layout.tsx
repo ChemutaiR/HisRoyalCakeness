@@ -1,10 +1,18 @@
-import { Work_Sans } from 'next/font/google';
+import React from 'react';
+import { Work_Sans, Pacifico } from 'next/font/google';
 import './globals.css';
 
 const workSans = Work_Sans({
   subsets: ['latin'],
   display: 'swap',
   variable: '--font-work-sans',
+});
+
+const pacifico = Pacifico({
+  subsets: ['latin'],
+  display: 'swap',
+  variable: '--font-pacifico',
+  weight: '400',
 });
 
 export const metadata = {
@@ -64,10 +72,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en" className={`${workSans.variable}`}>
-      <head>
-        <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet" />
-      </head>
+    <html lang="en" className={`${workSans.variable} ${pacifico.variable}`}>
       <body className="font-work-sans">
         {children}
       </body>

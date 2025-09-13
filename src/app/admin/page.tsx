@@ -2,13 +2,13 @@
 
 import Navbar from '@/components/Navbar';
 import Footer from '@/components/Footer';
-import { useState } from 'react';
-import { Pencil, Trash2, X } from 'lucide-react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, useCallback } from 'react';
+// import { useRouter } from 'next/navigation';
 import ManageOrdersContent from '@/components/admin/ManageOrdersContent';
 import Analytics from '@/components/admin/Analytics';
 import Products from '@/components/admin/Products';
 import Customers from '@/components/admin/Customers';
+import Recipes from '@/components/admin/Recipes';
 import Promotions from '@/components/admin/Promotions';
 import Reviews from '@/components/admin/Reviews';
 import Settings from '@/components/admin/Settings';
@@ -26,216 +26,230 @@ const tabs = [
   { name: 'Staff', key: 'staff' },
 ];
 
-function TabContent({ activeTab }: { activeTab: string }) {
-  const router = useRouter();
-
-  switch (activeTab) {
-    case 'manageorders':
-      return <ManageOrdersContent />;
-    case 'orderhistory':
-      return (
-        <div className="py-8">
-          <h2 className="text-2xl font-bold mb-2">Order History</h2>
-          <p className="text-gray-600 text-base mb-8">View all completed and past orders here.</p>
-          <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-            <div className="bg-gray-50 px-6 py-4 border-b">
-              <h3 className="text-lg font-semibold text-gray-800">Past Orders</h3>
-            </div>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Date</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cake Type</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {[
-                    { id: 101, orderDate: '2025-05-01', deliveryDate: '2025-05-05', customer: 'Alice Smith', cake: 'Red Velvet', size: '1 kg', status: 'Delivered' },
-                    { id: 102, orderDate: '2025-04-15', deliveryDate: '2025-04-20', customer: 'Bob Lee', cake: 'Chocolate Fudge', size: '2 kg', status: 'Delivered' },
-                    { id: 103, orderDate: '2025-03-10', deliveryDate: '2025-03-15', customer: 'Cathy Brown', cake: 'Lemon Cake', size: '0.5 kg', status: 'Cancelled' },
-                    { id: 104, orderDate: '2025-02-20', deliveryDate: '2025-02-25', customer: 'David Green', cake: 'Rainbow Cake', size: '3 kg', status: 'Delivered' },
-                    { id: 105, orderDate: '2025-01-05', deliveryDate: '2025-01-10', customer: 'Eva White', cake: 'Vegan Cake', size: '1.5 kg', status: 'Delivered' },
-                  ].map(order => (
-                    <tr key={order.id} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.id}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.deliveryDate}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.customer}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.cake}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.size}</td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm">
-                        <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{order.status}</span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-      );
-    case 'analytics':
-      return <Analytics />;
-    case 'products':
-      return <Products />;
-    case 'customers':
-      return <Customers />;
-    case 'recipes':
-      return (
-        <div className="py-8">
-          <h2 className="text-2xl font-bold mb-2">Recipe Management</h2>
-          <p className="text-gray-600 text-base mb-8">View and manage your cake recipes here.</p>
-          
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {/* Red Velvet Cake Recipe Card */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="bg-red-600 p-4">
-                <h3 className="text-xl font-bold text-white">Red Velvet Cake</h3>
-                <p className="text-red-100 text-sm">Classic Southern favorite</p>
-              </div>
-              <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Ingredients:</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• 2 1/2 cups all-purpose flour</li>
-                    <li>• 1 1/2 cups granulated sugar</li>
-                    <li>• 1 tsp baking soda</li>
-                    <li>• 1 tsp salt</li>
-                    <li>• 2 tbsp cocoa powder</li>
-                    <li>• 1 1/2 cups vegetable oil</li>
-                    <li>• 1 cup buttermilk</li>
-                    <li>• 2 large eggs</li>
-                    <li>• 2 tbsp red food coloring</li>
-                    <li>• 1 tsp vanilla extract</li>
-                  </ul>
-                </div>
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Instructions:</h4>
-                  <ol className="text-sm text-gray-600 space-y-1">
-                    <li>1. Preheat oven to 350°F (175°C)</li>
-                    <li>2. Mix dry ingredients in a bowl</li>
-                    <li>3. Beat oil, sugar, and eggs until fluffy</li>
-                    <li>4. Add food coloring and vanilla</li>
-                    <li>5. Alternate adding flour and buttermilk</li>
-                    <li>6. Bake for 25-30 minutes</li>
-                  </ol>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Prep: 20 min | Cook: 30 min</span>
-                  <button className="bg-[#c7b8ea] text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#c7b8ea]/80 transition-colors">
-                    Edit Recipe
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Chocolate Fudge Cake Recipe Card */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="p-4" style={{backgroundColor: '#8B4513'}}>
-                <h3 className="text-xl font-bold text-white">Chocolate Fudge Cake</h3>
-                <p className="text-white text-sm opacity-80">Rich and decadent</p>
-              </div>
-              <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Ingredients:</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• 2 cups all-purpose flour</li>
-                    <li>• 2 cups granulated sugar</li>
-                    <li>• 3/4 cup unsweetened cocoa powder</li>
-                    <li>• 2 tsp baking soda</li>
-                    <li>• 1 tsp baking powder</li>
-                    <li>• 1 tsp salt</li>
-                    <li>• 2 large eggs</li>
-                    <li>• 1 cup milk</li>
-                    <li>• 1 cup hot water</li>
-                    <li>• 1/2 cup vegetable oil</li>
-                    <li>• 2 tsp vanilla extract</li>
-                  </ul>
-                </div>
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Instructions:</h4>
-                  <ol className="text-sm text-gray-600 space-y-1">
-                    <li>1. Preheat oven to 350°F (175°C)</li>
-                    <li>2. Sift together dry ingredients</li>
-                    <li>3. Beat eggs, milk, oil, and vanilla</li>
-                    <li>4. Gradually add dry ingredients</li>
-                    <li>5. Stir in hot water (batter will be thin)</li>
-                    <li>6. Bake for 30-35 minutes</li>
-                  </ol>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Prep: 15 min | Cook: 35 min</span>
-                  <button className="bg-[#c7b8ea] text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#c7b8ea]/80 transition-colors">
-                    Edit Recipe
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            {/* Vanilla Cake Recipe Card */}
-            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-              <div className="p-4" style={{backgroundColor: '#DAA520'}}>
-                <h3 className="text-xl font-bold text-white">Vanilla Cake</h3>
-                <p className="text-white text-sm opacity-80">Classic and versatile</p>
-              </div>
-              <div className="p-6">
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Ingredients:</h4>
-                  <ul className="text-sm text-gray-600 space-y-1">
-                    <li>• 2 1/4 cups all-purpose flour</li>
-                    <li>• 1 1/2 cups granulated sugar</li>
-                    <li>• 3 1/2 tsp baking powder</li>
-                    <li>• 1 tsp salt</li>
-                    <li>• 1/2 cup unsalted butter, softened</li>
-                    <li>• 3 large eggs</li>
-                    <li>• 1 1/4 cups whole milk</li>
-                    <li>• 2 tsp vanilla extract</li>
-                    <li>• 1/4 cup vegetable oil</li>
-                  </ul>
-                </div>
-                <div className="mb-4">
-                  <h4 className="font-semibold text-gray-800 mb-2">Instructions:</h4>
-                  <ol className="text-sm text-gray-600 space-y-1">
-                    <li>1. Preheat oven to 350°F (175°C)</li>
-                    <li>2. Cream butter and sugar until light</li>
-                    <li>3. Add eggs one at a time</li>
-                    <li>4. Mix in vanilla and oil</li>
-                    <li>5. Alternate flour and milk</li>
-                    <li>6. Bake for 25-30 minutes</li>
-                  </ol>
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-gray-500">Prep: 20 min | Cook: 30 min</span>
-                  <button className="bg-[#c7b8ea] text-black px-4 py-2 rounded-full text-sm font-semibold hover:bg-[#c7b8ea]/80 transition-colors">
-                    Edit Recipe
-                  </button>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      );
-    case 'promotions':
-      return <Promotions />;
-    case 'reviews':
-      return <Reviews />;
-    case 'settings':
-      return <Settings />;
-    case 'staff':
-      return <div className="py-8"><h2 className="text-xl font-bold mb-2">Staff</h2><p className="text-gray-600 text-sm mb-8">Manage admin and staff accounts here.</p></div>;
-    default:
-      return null;
-  }
-}
-
 export default function AdminPage() {
   const [activeTab, setActiveTab] = useState('manageorders');
+  
+  // Shared order state
+  const [orders, setOrders] = useState([
+    { 
+      id: '#12345', 
+      dueDate: '2024-01-20', 
+      cake: 'Chocolate Cake', 
+      cream: 'Vanilla', 
+      topping: 'Chocolate Chips', 
+      allergies: 'None', 
+      status: 'Ready',
+      specialInstructions: 'Please make it extra chocolatey and add a birthday message "Happy Birthday Sarah!"',
+      images: ['/product-images/chocolate fudge.jpg']
+    },
+    { 
+      id: '#12346', 
+      dueDate: '2024-01-21', 
+      cake: 'Vanilla Cake', 
+      cream: 'Strawberry', 
+      topping: 'Fresh Berries', 
+      allergies: 'Nuts', 
+      status: 'Received',
+      specialInstructions: 'No nuts please, and make it pink themed for a baby shower',
+      images: []
+    },
+    { 
+      id: '#12347', 
+      dueDate: '2024-01-22', 
+      cake: 'Red Velvet Cake', 
+      cream: 'Cream Cheese', 
+      topping: 'White Chocolate', 
+      allergies: 'Dairy', 
+      status: 'In Progress',
+      specialInstructions: 'Please use dairy-free cream cheese alternative',
+      images: ['/product-images/red velvet.jpg', '/product-images/white forest.jpg']
+    },
+    { 
+      id: '#12348', 
+      dueDate: '2024-01-23', 
+      cake: 'Carrot Cake', 
+      cream: 'Vanilla', 
+      topping: 'Walnuts', 
+      allergies: 'Gluten', 
+      status: 'Dispatched',
+      specialInstructions: 'Use gluten-free flour and make it extra moist',
+      images: ['/product-images/carrot cake.jpg']
+    },
+    { 
+      id: '#12349', 
+      dueDate: '2024-01-24', 
+      cake: 'Lemon Cake', 
+      cream: 'Vanilla', 
+      topping: 'Lemon Zest', 
+      allergies: 'None', 
+      status: 'Received',
+      specialInstructions: '',
+      images: []
+    },
+    { 
+      id: '#12350', 
+      dueDate: '2024-01-25', 
+      cake: 'Black Forest Cake', 
+      cream: 'Chocolate', 
+      topping: 'Cherries', 
+      allergies: 'None', 
+      status: 'In Progress',
+      specialInstructions: '',
+      images: []
+    },
+    { 
+      id: '#12351', 
+      dueDate: '2024-01-26', 
+      cake: 'Strawberry Cake', 
+      cream: 'Strawberry', 
+      topping: 'Fresh Strawberries', 
+      allergies: 'None', 
+      status: 'Ready',
+      specialInstructions: '',
+      images: []
+    },
+    { 
+      id: '#12352', 
+      dueDate: '2024-01-27', 
+      cake: 'Coconut Cake', 
+      cream: 'Vanilla', 
+      topping: 'Coconut Flakes', 
+      allergies: 'None', 
+      status: 'Received',
+      specialInstructions: '',
+      images: []
+    },
+    { 
+      id: '#12353', 
+      dueDate: '2024-01-28', 
+      cake: 'Banana Cake', 
+      cream: 'Vanilla', 
+      topping: 'Banana Slices', 
+      allergies: 'None', 
+      status: 'In Progress',
+      specialInstructions: '',
+      images: []
+    },
+    { 
+      id: '#12354', 
+      dueDate: '2024-01-29', 
+      cake: 'Mocha Cake', 
+      cream: 'Coffee', 
+      topping: 'Coffee Beans', 
+      allergies: 'None', 
+      status: 'Ready',
+      specialInstructions: '',
+      images: []
+    },
+  ]);
+
+  const [orderHistory, setOrderHistory] = useState([
+    { id: 101, orderDate: '2025-05-01', deliveryDate: '2025-05-05', customer: 'Alice Smith', cake: 'Red Velvet', size: '1 kg', status: 'Delivered' },
+    { id: 102, orderDate: '2025-04-15', deliveryDate: '2025-04-20', customer: 'Bob Lee', cake: 'Chocolate Fudge', size: '2 kg', status: 'Delivered' },
+    { id: 103, orderDate: '2025-03-10', deliveryDate: '2025-03-15', customer: 'Cathy Brown', cake: 'Lemon Cake', size: '0.5 kg', status: 'Cancelled' },
+    { id: 104, orderDate: '2025-02-20', deliveryDate: '2025-02-25', customer: 'David Green', cake: 'Rainbow Cake', size: '3 kg', status: 'Delivered' },
+    { id: 105, orderDate: '2025-01-05', deliveryDate: '2025-01-10', customer: 'Eva White', cake: 'Vegan Cake', size: '1.5 kg', status: 'Delivered' },
+  ]);
+
+  // Function to move delivered orders to history
+  const moveDeliveredToHistory = useCallback(() => {
+    const deliveredOrders = orders.filter(order => order.status === 'Delivered');
+    if (deliveredOrders.length > 0) {
+      const historyEntries = deliveredOrders.map(order => ({
+        id: parseInt(order.id.replace('#', '')),
+        orderDate: order.dueDate,
+        deliveryDate: new Date().toISOString().split('T')[0], // Today's date
+        customer: 'Customer', // You can add customer field to orders if needed
+        cake: order.cake,
+        size: '1 kg', // Default size, you can add size field to orders
+        status: 'Delivered'
+      }));
+      
+      setOrderHistory(prev => [...historyEntries, ...prev]);
+      setOrders(prev => prev.filter(order => order.status !== 'Delivered'));
+    }
+  }, [orders]);
+
+  // Check for delivered orders every day at midnight
+  useEffect(() => {
+    const checkDeliveredOrders = () => {
+      const now = new Date();
+      if (now.getHours() === 0 && now.getMinutes() === 0) {
+        moveDeliveredToHistory();
+      }
+    };
+
+    const interval = setInterval(checkDeliveredOrders, 60000); // Check every minute
+    return () => clearInterval(interval);
+  }, [moveDeliveredToHistory]); // Add moveDeliveredToHistory as dependency
+
+  function TabContent({ activeTab }: { activeTab: string }) {
+    switch (activeTab) {
+      case 'manageorders':
+        return <ManageOrdersContent orders={orders} setOrders={setOrders} moveDeliveredToHistory={moveDeliveredToHistory} />;
+      case 'orderhistory':
+        return (
+          <div className="py-8">
+            <h2 className="text-2xl font-bold mb-2">Order History</h2>
+            <p className="text-gray-600 text-base mb-8">View all completed and past orders here.</p>
+            <div className="bg-white rounded-lg shadow-lg overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b">
+                <h3 className="text-lg font-semibold text-gray-800">Past Orders</h3>
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order #</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Order Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Delivery Date</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cake Type</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Size</th>
+                      <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                    </tr>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {orderHistory.map(order => (
+                      <tr key={order.id} className="hover:bg-gray-50">
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.id}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.orderDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.deliveryDate}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{order.customer}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.cake}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{order.size}</td>
+                        <td className="px-6 py-4 whitespace-nowrap text-sm">
+                          <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${order.status === 'Delivered' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}`}>{order.status}</span>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        );
+      case 'analytics':
+        return <Analytics />;
+      case 'products':
+        return <Products />;
+      case 'customers':
+        return <Customers />;
+      case 'recipes':
+        return <Recipes />;
+      case 'promotions':
+        return <Promotions />;
+      case 'reviews':
+        return <Reviews />;
+      case 'settings':
+        return <Settings />;
+      case 'staff':
+        return <div className="py-8"><h2 className="text-xl font-bold mb-2">Staff</h2><p className="text-gray-600 text-sm mb-8">Manage admin and staff accounts here.</p></div>;
+      default:
+        return null;
+    }
+  }
+
   return (
     <main className="min-h-screen bg-gray-50 font-work-sans flex flex-col">
       <Navbar />

@@ -32,11 +32,8 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({
-  cake,
   selectedSize,
   selectedCream,
-  customNotes,
-  uploadedImages,
   totalPrice,
   isAuthenticated
 }: AddToCartButtonProps) {
@@ -53,21 +50,21 @@ export default function AddToCartButton({
     // Simulate API call
     await new Promise(resolve => setTimeout(resolve, 1000));
     
-    const cartItem = {
-      id: Date.now(), // Generate unique ID
-      cakeId: cake.id,
-      cakeName: cake.name,
-      size: selectedSize.size,
-      creamType: selectedCream.name,
-      customNotes,
-      referenceImages: uploadedImages,
-      price: totalPrice,
-      servings: selectedSize.servings,
-      quantity: 1
-    };
+    // const cartItem = {
+    //   id: Date.now(), // Generate unique ID
+    //   cakeId: cake.id,
+    //   cakeName: cake.name,
+    //   size: selectedSize.size,
+    //   creamType: selectedCream.name,
+    //   customNotes,
+    //   referenceImages: uploadedImages,
+    //   price: totalPrice,
+    //   servings: selectedSize.servings,
+    //   quantity: 1
+    // };
 
     // TODO: Add to cart context/state management
-    console.log('Adding to cart:', cartItem);
+    // console.log('Adding to cart:', cartItem);
     
     setIsAdding(false);
     setIsAdded(true);

@@ -7,6 +7,7 @@ interface ContainerType {
 
 interface ContainerTypeSelectorProps {
   selectedContainerType: ContainerType | null;
+  // eslint-disable-next-line no-unused-vars
   onContainerTypeChange: (containerType: ContainerType) => void;
 }
 

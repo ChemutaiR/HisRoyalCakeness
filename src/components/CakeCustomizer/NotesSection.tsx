@@ -5,6 +5,7 @@ import { Lock } from 'lucide-react';
 interface NotesSectionProps {
   isAuthenticated: boolean;
   notes: string;
+  // eslint-disable-next-line no-unused-vars
   onNotesChange: (notes: string) => void;
 }
 

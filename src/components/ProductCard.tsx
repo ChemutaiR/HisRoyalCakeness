@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import Link from 'next/link';
-import { Eye } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 
 interface ProductCardProps {
   id: number;
@@ -8,7 +8,6 @@ interface ProductCardProps {
   description: string;
   imageUrl: string;
   price: number;
-  size: string;
 }
 
 export default function ProductCard({ 
@@ -16,8 +15,7 @@ export default function ProductCard({
   name, 
   description, 
   imageUrl, 
-  price, 
-  size
+  price
 }: ProductCardProps) {
   return (
     <div className="bg-white rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 hover:scale-105">
@@ -35,18 +33,25 @@ export default function ProductCard({
         <h3 className="font-semibold mb-2 text-lg text-gray-900">{name}</h3>
         <p className="text-gray-600 text-sm mb-4 line-clamp-2 flex-grow">{description}</p>
         
-        <div className="flex justify-between items-center mt-auto">
-          <div className="flex flex-col">
+        <div className="flex flex-col mt-auto">
+          <div className="flex flex-col mb-3">
             <span className="font-bold text-lg text-gray-900">KES {price.toLocaleString()}</span>
-            <span className="text-xs text-gray-500">Size: {size}</span>
           </div>
-          <Link 
-            href={name === 'Solo Slice Set' ? '/cakes/customloaves' : `/cakes/${id}`}
-            className="bg-[#c7b8ea] text-black text-sm px-4 py-2 rounded-full font-semibold transition-all duration-300 hover:bg-[#c7b8ea]/80 hover:shadow-lg hover:scale-105 active:scale-95 flex items-center gap-2"
-          >
-            <Eye className="w-4 h-4" />
-            View
-          </Link>
+          <div className="flex flex-col gap-2">
+            <button 
+              className="w-full bg-gray-200 text-gray-700 text-sm px-4 py-2 rounded-full font-semibold transition-all duration-300 hover:bg-gray-300 hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+            >
+              <EyeOff className="w-4 h-4" />
+              Preview
+            </button>
+            <Link 
+              href={name === 'Solo Slice Set' ? '/cakes/customloaves' : `/cakes/${id}`}
+              className="w-full bg-[#c7b8ea] text-black text-sm px-4 py-2 rounded-full font-semibold transition-all duration-300 hover:bg-[#c7b8ea]/80 hover:shadow-lg hover:scale-105 active:scale-95 flex items-center justify-center gap-2"
+            >
+              <Eye className="w-4 h-4" />
+              View
+            </Link>
+          </div>
         </div>
       </div>
     </div>
