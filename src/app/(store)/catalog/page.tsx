@@ -1,8 +1,6 @@
 'use client';
 
 import { useState, useMemo } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import { Search, X, SlidersHorizontal } from 'lucide-react';
 
@@ -124,7 +122,6 @@ export default function CatalogPage() {
 
   return (
     <main className="min-h-screen bg-gray-50">
-      <Navbar />
       
       {/* Header */}
       <section className="bg-gradient-to-br from-white via-pink-50 to-purple-50 py-10 border-b border-gray-100">
@@ -327,8 +324,6 @@ export default function CatalogPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </main>
   );
 } 

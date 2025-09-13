@@ -2,8 +2,6 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import SizeSelector from '@/components/CakeCustomizer/SizeSelector';
 import CreamSelector from '@/components/CakeCustomizer/CreamSelector';
 import NotesSection from '@/components/CakeCustomizer/NotesSection';
@@ -1054,17 +1052,13 @@ export default function CakeDetailPage() {
 
   if (!cake) {
     return (
-      <div className="min-h-screen bg-gray-50">
-        <Navbar />
-        <div className="max-w-7xl mx-auto px-4 py-8">
-          <div className="text-center">
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">Cake not found</h1>
-            <Link href="/catalog" className="text-[#c7b8ea] hover:underline">
-              Back to catalog
-            </Link>
-          </div>
+      <div className="max-w-7xl mx-auto px-4 py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold text-gray-900 mb-4">Cake not found</h1>
+          <Link href="/catalog" className="text-[#c7b8ea] hover:underline">
+            Back to catalog
+          </Link>
         </div>
-        <Footer />
       </div>
     );
   }
@@ -1073,7 +1067,6 @@ export default function CakeDetailPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       
       {/* Breadcrumb */}
       <div className="bg-white border-b">
@@ -1183,8 +1176,6 @@ export default function CakeDetailPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 } 

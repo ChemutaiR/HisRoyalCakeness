@@ -33,7 +33,7 @@ export default function AdminPage() {
   const [orders, setOrders] = useState([
     { 
       id: '#12345', 
-      dueDate: '2024-01-20', 
+      dueDate: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 7 days from now
       cake: 'Chocolate Cake', 
       cream: 'Vanilla', 
       topping: 'Chocolate Chips', 
@@ -44,7 +44,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12346', 
-      dueDate: '2024-01-21', 
+      dueDate: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString().split('T')[0], // Tomorrow
       cake: 'Vanilla Cake', 
       cream: 'Strawberry', 
       topping: 'Fresh Berries', 
@@ -55,7 +55,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12347', 
-      dueDate: '2024-01-22', 
+      dueDate: new Date(Date.now() + 3 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 3 days from now
       cake: 'Red Velvet Cake', 
       cream: 'Cream Cheese', 
       topping: 'White Chocolate', 
@@ -66,7 +66,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12348', 
-      dueDate: '2024-01-23', 
+      dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 5 days from now
       cake: 'Carrot Cake', 
       cream: 'Vanilla', 
       topping: 'Walnuts', 
@@ -77,7 +77,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12349', 
-      dueDate: '2024-01-24', 
+      dueDate: new Date().toISOString().split('T')[0], // Today
       cake: 'Lemon Cake', 
       cream: 'Vanilla', 
       topping: 'Lemon Zest', 
@@ -88,7 +88,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12350', 
-      dueDate: '2024-01-25', 
+      dueDate: new Date(Date.now() + 2 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 2 days from now
       cake: 'Black Forest Cake', 
       cream: 'Chocolate', 
       topping: 'Cherries', 
@@ -99,7 +99,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12351', 
-      dueDate: '2024-01-26', 
+      dueDate: new Date(Date.now() + 4 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 4 days from now
       cake: 'Strawberry Cake', 
       cream: 'Strawberry', 
       topping: 'Fresh Strawberries', 
@@ -110,7 +110,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12352', 
-      dueDate: '2024-01-27', 
+      dueDate: new Date(Date.now() + 6 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 6 days from now
       cake: 'Coconut Cake', 
       cream: 'Vanilla', 
       topping: 'Coconut Flakes', 
@@ -121,7 +121,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12353', 
-      dueDate: '2024-01-28', 
+      dueDate: new Date(Date.now() + 8 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 8 days from now
       cake: 'Banana Cake', 
       cream: 'Vanilla', 
       topping: 'Banana Slices', 
@@ -132,7 +132,7 @@ export default function AdminPage() {
     },
     { 
       id: '#12354', 
-      dueDate: '2024-01-29', 
+      dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000).toISOString().split('T')[0], // 10 days from now
       cake: 'Mocha Cake', 
       cream: 'Coffee', 
       topping: 'Coffee Beans', 

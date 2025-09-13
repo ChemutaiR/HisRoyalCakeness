@@ -1,8 +1,6 @@
 'use client';
 
 import { useState } from 'react';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
 import { ArrowLeft } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -112,7 +110,6 @@ export default function CustomLoavesPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <Navbar />
       
       {/* Breadcrumb */}
       <div className="bg-white border-b">
@@ -307,8 +304,6 @@ export default function CustomLoavesPage() {
           </div>
         </div>
       </div>
-
-      <Footer />
     </div>
   );
 } 

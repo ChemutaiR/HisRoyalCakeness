@@ -1,10 +1,177 @@
 "use client";
 
 import { useState } from 'react';
-import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Star, Eye, Target, BarChart3 } from 'lucide-react';
+import Image from 'next/image';
+import { TrendingUp, TrendingDown, DollarSign, ShoppingCart, Users, Star, Eye, Target, BarChart3, Calendar, X } from 'lucide-react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+} from "@/components/ui/select";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { Button } from "@/components/ui/button";
+import { Calendar as CalendarComponent } from "@/components/ui/calendar";
+import { format } from "date-fns";
 
 export default function Analytics() {
   const [selectedPeriod, setSelectedPeriod] = useState('month');
+  const [customDateRange, setCustomDateRange] = useState<{
+    from: Date | undefined;
+    to: Date | undefined;
+  }>({
+    from: undefined,
+    to: undefined,
+  });
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [datePickerStep, setDatePickerStep] = useState<'from' | 'to'>('from');
+  const [displayValue, setDisplayValue] = useState('This Month');
+
+  // Comprehensive cake performance data
+  const cakePerformanceData = [
+    { 
+      name: 'Chocolate Cake', 
+      orders: 89, 
+      revenue: 400500, 
+      rating: 4.9, 
+      image: '/product-images/chcocolate fudge.jpg'
+    },
+    { 
+      name: 'Red Velvet Cake', 
+      orders: 67, 
+      revenue: 348400, 
+      rating: 4.8, 
+      image: '/product-images/red velvet.jpg'
+    },
+    { 
+      name: 'Vanilla Cake', 
+      orders: 54, 
+      revenue: 259200, 
+      rating: 4.7, 
+      image: '/product-images/vanilla cake.jpg'
+    },
+    { 
+      name: 'Carrot Cake', 
+      orders: 43, 
+      revenue: 215000, 
+      rating: 4.6, 
+      image: '/product-images/carrot cake.jpg'
+    },
+    { 
+      name: 'Strawberry Cake', 
+      orders: 38, 
+      revenue: 182400, 
+      rating: 4.8, 
+      image: '/product-images/strawberry cake.jpg'
+    },
+    { 
+      name: 'Black Forest Cake', 
+      orders: 35, 
+      revenue: 175000, 
+      rating: 4.9, 
+      image: '/product-images/black forest.jpg'
+    },
+    { 
+      name: 'Lemon Cake', 
+      orders: 32, 
+      revenue: 153600, 
+      rating: 4.5, 
+      image: '/product-images/lemon cake.jpg'
+    },
+    { 
+      name: 'Coconut Cake', 
+      orders: 28, 
+      revenue: 134400, 
+      rating: 4.4, 
+      image: '/product-images/coconut cake.jpg'
+    },
+    { 
+      name: 'Banana Cake', 
+      orders: 25, 
+      revenue: 120000, 
+      rating: 4.6, 
+      image: '/product-images/banana cake.jpg'
+    },
+    { 
+      name: 'Mocha Cake', 
+      orders: 22, 
+      revenue: 110000, 
+      rating: 4.7, 
+      image: '/product-images/mocha cake.jpg'
+    },
+    { 
+      name: 'Rainbow Cake', 
+      orders: 20, 
+      revenue: 100000, 
+      rating: 4.8, 
+      image: '/product-images/rainbow cake.jpg'
+    },
+    { 
+      name: 'White Forest Cake', 
+      orders: 18, 
+      revenue: 90000, 
+      rating: 4.5, 
+      image: '/product-images/white forest.jpg'
+    }
+  ];
+
+  // Date range helper functions
+  const handlePeriodChange = (value: string) => {
+    if (value === 'custom') {
+      setSelectedPeriod('custom');
+      setShowDatePicker(false);
+      setDatePickerStep('from');
+    } else {
+      setSelectedPeriod(value);
+      setCustomDateRange({ from: undefined, to: undefined });
+      setShowDatePicker(false);
+      setDisplayValue(
+        value === 'week' ? 'This Week' :
+        value === 'month' ? 'This Month' :
+        value === 'quarter' ? 'This Quarter' :
+        value === 'year' ? 'This Year' : 'This Month'
+      );
+    }
+  };
+
+  const handleDateSelect = (date: Date | undefined) => {
+    if (datePickerStep === 'from') {
+      setCustomDateRange(prev => ({ ...prev, from: date }));
+      setDatePickerStep('to');
+    } else {
+      setCustomDateRange(prev => ({ ...prev, to: date }));
+      // Auto-apply when both dates are selected
+      if (date && customDateRange.from) {
+        setTimeout(() => {
+          applyCustomDateRange();
+        }, 100);
+      }
+    }
+  };
+
+  const applyCustomDateRange = () => {
+    if (customDateRange.from && customDateRange.to) {
+      setSelectedPeriod('custom');
+      setDisplayValue('Custom Date Range');
+      setShowDatePicker(false);
+      setDatePickerStep('from');
+      // Here you would typically fetch data for the custom date range
+      // console.log('Custom date range applied:', customDateRange);
+    }
+  };
+
+  const clearCustomDateRange = () => {
+    setCustomDateRange({ from: undefined, to: undefined });
+    setSelectedPeriod('month');
+    setDisplayValue('This Month');
+    setShowDatePicker(false);
+    setDatePickerStep('from');
+  };
+
 
   // Enhanced analytics data
   const metrics = {
@@ -110,16 +277,104 @@ export default function Analytics() {
           <h2 className="text-2xl font-bold mb-2">Analytics Dashboard</h2>
           <p className="text-gray-600 text-base">Track your business performance and insights</p>
         </div>
-        <select 
-          value={selectedPeriod} 
-          onChange={(e) => setSelectedPeriod(e.target.value)}
-          className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-        >
-          <option value="week">This Week</option>
-          <option value="month">This Month</option>
-          <option value="quarter">This Quarter</option>
-          <option value="year">This Year</option>
-        </select>
+        <div className="flex items-center gap-2">
+          <Select value={selectedPeriod} onValueChange={handlePeriodChange}>
+            <SelectTrigger className="w-[180px]">
+              <span className="truncate">
+                {selectedPeriod === 'custom' ? 'Custom Date Range' : displayValue}
+              </span>
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="week">This Week</SelectItem>
+              <SelectItem value="month">This Month</SelectItem>
+              <SelectItem value="quarter">This Quarter</SelectItem>
+              <SelectItem value="year">This Year</SelectItem>
+              <SelectItem value="custom">Custom Date Range</SelectItem>
+            </SelectContent>
+          </Select>
+
+          {/* Custom Date Range Picker - Only show when custom is selected */}
+          {selectedPeriod === 'custom' && (
+            <Popover open={showDatePicker} onOpenChange={setShowDatePicker}>
+              <PopoverTrigger asChild>
+                <Button 
+                  variant="outline" 
+                  className="w-[200px] justify-start text-left font-normal"
+                  onClick={() => setShowDatePicker(true)}
+                >
+                  <Calendar className="mr-2 h-4 w-4 flex-shrink-0" />
+                  <span className="truncate">
+                    {customDateRange.from ? (
+                      customDateRange.to ? (
+                        `${format(customDateRange.from, 'MMM dd')} - ${format(customDateRange.to, 'MMM dd')}`
+                      ) : (
+                        format(customDateRange.from, 'MMM dd, yyyy')
+                      )
+                    ) : (
+                      'Pick a date range'
+                    )}
+                  </span>
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent className="w-auto p-0" align="end">
+                <div className="p-4">
+                  <div className="flex items-center justify-between mb-4">
+                    <h4 className="font-medium">
+                      {datePickerStep === 'from' ? 'Select Start Date' : 'Select End Date'}
+                    </h4>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setShowDatePicker(false)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  </div>
+                  
+                  <CalendarComponent
+                    mode="single"
+                    selected={datePickerStep === 'from' ? customDateRange.from : customDateRange.to}
+                    onSelect={handleDateSelect}
+                    disabled={(date) => {
+                      if (datePickerStep === 'to' && customDateRange.from) {
+                        return date < customDateRange.from;
+                      }
+                      return date > new Date();
+                    }}
+                    initialFocus
+                  />
+                  
+                  <div className="flex items-center justify-between mt-4 pt-4 border-t">
+                    <div className="text-sm text-gray-600">
+                      {customDateRange.from && (
+                        <div>From: {format(customDateRange.from, 'MMM dd, yyyy')}</div>
+                      )}
+                      {customDateRange.to && (
+                        <div>To: {format(customDateRange.to, 'MMM dd, yyyy')}</div>
+                      )}
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={clearCustomDateRange}
+                      >
+                        Cancel
+                      </Button>
+                      <Button
+                        size="sm"
+                        onClick={applyCustomDateRange}
+                        disabled={!customDateRange.from || !customDateRange.to}
+                      >
+                        Apply
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
+        </div>
       </div>
 
       {/* Key Metrics */}
@@ -355,6 +610,87 @@ export default function Analytics() {
                 </div>
               );
             })}
+          </div>
+        </div>
+      </div>
+
+      {/* Cake Performance Table */}
+      <div className="mt-8 bg-white rounded-lg shadow-lg">
+        <div className="px-6 py-4 border-b">
+          <h3 className="text-lg font-semibold text-gray-800">Cake Performance Analysis</h3>
+          <p className="text-sm text-gray-600 mt-1">Detailed breakdown of each cake&apos;s performance metrics</p>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Cake Name</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Total Orders</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Revenue Generated</th>
+                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Customer Rating</th>
+              </tr>
+            </thead>
+            <tbody className="bg-white divide-y divide-gray-200">
+              {cakePerformanceData.map((cake, index) => (
+                <tr key={cake.name} className="hover:bg-gray-50">
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex-shrink-0 h-12 w-12">
+                        <Image 
+                          className="h-12 w-12 rounded-lg object-cover" 
+                          src={cake.image} 
+                          alt={cake.name}
+                          width={48}
+                          height={48}
+                          onError={(e) => {
+                            e.currentTarget.src = '/product-images/vanilla cake.jpg';
+                          }}
+                        />
+                      </div>
+                      <div className="ml-4">
+                        <div className="text-sm font-medium text-gray-900">{cake.name}</div>
+                        <div className="text-sm text-gray-500">#{index + 1} Best Seller</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm text-gray-900">{cake.orders}</div>
+                    <div className="text-sm text-gray-500">orders</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="text-sm font-medium text-gray-900">KES {cake.revenue.toLocaleString()}</div>
+                    <div className="text-sm text-gray-500">KES {(cake.revenue / cake.orders).toLocaleString()} avg</div>
+                  </td>
+                  <td className="px-6 py-4 whitespace-nowrap">
+                    <div className="flex items-center">
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, i) => (
+                          <Star
+                            key={i}
+                            className={`h-4 w-4 ${
+                              i < Math.floor(cake.rating)
+                                ? 'text-yellow-400 fill-current'
+                                : 'text-gray-300'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                      <span className="ml-2 text-sm text-gray-900">{cake.rating}</span>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+        <div className="px-6 py-4 bg-gray-50 border-t">
+          <div className="flex items-center justify-between text-sm text-gray-600">
+            <div>
+              Showing {cakePerformanceData.length} cakes • Total Revenue: KES {cakePerformanceData.reduce((sum, cake) => sum + cake.revenue, 0).toLocaleString()}
+            </div>
+            <div>
+              Average Rating: {(cakePerformanceData.reduce((sum, cake) => sum + cake.rating, 0) / cakePerformanceData.length).toFixed(1)}/5.0
+            </div>
           </div>
         </div>
       </div>
