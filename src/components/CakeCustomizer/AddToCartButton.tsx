@@ -2,6 +2,8 @@
 
 import { useState } from 'react';
 import { ShoppingCart, Check } from 'lucide-react';
+// State management imports removed - will be replaced with Redux
+import { CustomizationOptions } from '@/types/shop/catalog';
 
 interface Size {
   size: string;
@@ -15,14 +17,14 @@ interface CreamOption {
   available: boolean;
 }
 
-interface Cake {
+interface CakeProduct {
   id: number;
   name: string;
   basePrice: number;
 }
 
 interface AddToCartButtonProps {
-  cake: Cake;
+  cake: CakeProduct;
   selectedSize: Size | null;
   selectedCream: CreamOption | null;
   customNotes: string;
@@ -32,13 +34,27 @@ interface AddToCartButtonProps {
 }
 
 export default function AddToCartButton({
+  cake,
   selectedSize,
   selectedCream,
+  customNotes,
+  uploadedImages,
   totalPrice,
   isAuthenticated
 }: AddToCartButtonProps) {
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
+  
+  // TODO: Replace with Redux state management
+  const addItem = (cake: CakeProduct, customization: CustomizationOptions, quantity: number) => {
+    // Temporary placeholder - will be replaced with actual cart logic
+    // console.log('Add to cart:', { cake, customization, quantity });
+  };
+  
+  const addNotification = (notification: { type: string; title: string; message: string; duration?: number }) => {
+    // Temporary placeholder - will be replaced with actual notification system
+    // console.log('Notification:', notification);
+  };
 
   const isDisabled = !selectedSize || !selectedCream || isAdding;
 
@@ -47,40 +63,49 @@ export default function AddToCartButton({
 
     setIsAdding(true);
     
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    
-    // const cartItem = {
-    //   id: Date.now(), // Generate unique ID
-    //   cakeId: cake.id,
-    //   cakeName: cake.name,
-    //   size: selectedSize.size,
-    //   creamType: selectedCream.name,
-    //   customNotes,
-    //   referenceImages: uploadedImages,
-    //   price: totalPrice,
-    //   servings: selectedSize.servings,
-    //   quantity: 1
-    // };
+    try {
+      // Create customization object
+      const customization: CustomizationOptions = {
+        selectedSize,
+        selectedCream,
+        selectedContainerType: { name: 'Circle', value: 'circle' }, // Default container
+        customNotes,
+        uploadedImages,
+      };
 
-    // TODO: Add to cart context/state management
-    // console.log('Adding to cart:', cartItem);
-    
-    setIsAdding(false);
-    setIsAdded(true);
-    
-    // Reset added state after 2 seconds
-    setTimeout(() => setIsAdded(false), 2000);
+      // Add to cart using the store
+      addItem(cake, customization, 1);
+      
+      setIsAdded(true);
+      addNotification({
+        type: 'success',
+        title: 'Added to Cart!',
+        message: `${cake.name} has been added to your cart`,
+        duration: 3000
+      });
+      
+      // Reset added state after 2 seconds
+      setTimeout(() => setIsAdded(false), 2000);
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Error',
+        message: 'Failed to add item to cart',
+        duration: 5000
+      });
+    } finally {
+      setIsAdding(false);
+    }
   };
 
   if (!isAuthenticated) {
     return (
       <div className="bg-white p-6 rounded-lg border border-gray-200">
         <div className="text-center">
-          <p className="text-sm text-gray-600 mb-4">
+          <p className="text-sm text-gray-500 leading-relaxed mb-4">
             Sign in to add this cake to your cart
           </p>
-          <button className="w-full bg-gray-300 text-gray-500 py-3 px-6 rounded-full font-semibold cursor-not-allowed">
+          <button className="w-full bg-gray-300 text-gray-500 py-3 px-6 rounded-full text-sm font-semibold cursor-not-allowed">
             Sign in to Continue
           </button>
         </div>
@@ -93,7 +118,7 @@ export default function AddToCartButton({
       <button
         onClick={handleAddToCart}
         disabled={isDisabled}
-        className={`w-full py-4 px-6 rounded-full font-semibold text-lg transition-all duration-200 flex items-center justify-center space-x-2 ${
+        className={`w-full py-4 px-6 rounded-full text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
           isDisabled
             ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
             : isAdded

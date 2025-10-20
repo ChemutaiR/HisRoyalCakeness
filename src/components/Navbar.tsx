@@ -95,7 +95,7 @@ const Navbar = () => {
             </div>
             <button
               className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
-              onClick={() => router.push('/cart')}
+              onClick={() => router.push('/shop/cart')}
               aria-label="Cart"
             >
               <ShoppingCart className="h-6 w-6 text-white" />

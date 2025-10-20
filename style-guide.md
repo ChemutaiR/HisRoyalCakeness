@@ -12,25 +12,32 @@
 |---------------------|-----------------------|---------------|
 | Main Heading        | text-4xl md:text-6xl  | 36 / 60        |
 | Section Heading     | text-3xl              | 30            |
-| Card Title          | text-2xl              | 24            |
+| Page Header         | text-2xl              | 24            |
+| Card Title          | text-sm               | 14            |
 | Label/FloatingLabel | text-sm               | 14            |
 | Button/Text         | text-base             | 16            |
 | Paragraph/Body      | text-base             | 16            |
+| Card Description    | text-xs               | 12            |
+| Page Subtitle       | text-sm               | 14            |
 
 ### Font Weights
 - Regular: `font-normal` (400)
-- Medium: `font-medium` (500)
-- Semibold: `font-semibold` (600)
-- Bold: `font-bold` (700)
+- Medium: `font-medium` (500) - **Primary for refined typography**
+- Semibold: `font-semibold` (600) - **For prices and important text**
+- Bold: `font-bold` (700) - **Use sparingly for emphasis**
 
 ### Line Heights
 - Headings: `leading-tight` (1.2)
 - Body Text: `leading-normal` (1.5)
 - Buttons: `leading-normal` (1.5)
+- Card Descriptions: `leading-relaxed` (1.625) - **For better readability**
+- Page Subtitles: `leading-relaxed` (1.625) - **For elegant spacing**
 
 ### Text Colors
 - Primary: Black (`text-black`)
 - Secondary: Gray-600 (`text-gray-600`)
+- **Refined Primary**: Gray-800 (`text-gray-800`) - **For elegant headings**
+- **Refined Secondary**: Gray-500 (`text-gray-500`) - **For subtle text**
 - Accent: Pink (`text-[#c7b8ea]`)
 - White: White (`text-white`)
 
@@ -54,6 +61,8 @@
 - Letter Spacing: Normal
 - Word Spacing: Normal
 - Line Height: Normal
+- **Letter Tracking**: `tracking-wide` for headings, `tracking-tight` for prices
+- **Header Spacing**: `mb-0.5` for tight header grouping
 
 ### Text Overflow
 - Headings: Truncate with ellipsis
@@ -79,6 +88,14 @@
 - Maintain consistent spacing between text elements
 - Ensure proper hierarchy with font sizes
 - Use semantic HTML elements for proper structure
+
+### **Refined Typography Guidelines**
+- **Page Headers**: Use `text-2xl font-medium text-gray-800 tracking-wide` for elegant page titles
+- **Page Subtitles**: Use `text-sm text-gray-500 leading-relaxed` for refined descriptions
+- **Card Titles**: Use `text-sm font-medium text-gray-800 tracking-wide` for product names
+- **Card Descriptions**: Use `text-xs text-gray-500 leading-relaxed` for product details
+- **Price Text**: Use `text-sm font-semibold text-gray-900 tracking-tight` for pricing
+- **Header Grouping**: Use `mb-0.5` for tight spacing between title and subtitle
 
 ## Color Palette
 

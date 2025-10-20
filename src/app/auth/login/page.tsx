@@ -1,17 +1,64 @@
 "use client";
 
-import { useState } from 'react';
+import React, { useState } from 'react';
+import { useRouter } from 'next/navigation';
+// State management imports removed - will be replaced with Redux
 
 export default function LoginPage() {
   const [form, setForm] = useState({
     email: '',
     password: '',
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  
+  // TODO: Replace with Redux state management
+  const login = async (credentials: { email: string; password: string }) => {
+    // Temporary placeholder - will be replaced with actual auth logic
+    // console.log('Login attempt:', credentials);
+    // Simulate API call
+    await new Promise(resolve => setTimeout(resolve, 1000));
+  };
+  
+  const addNotification = (notification: { type: string; title: string; message: string; duration?: number }) => {
+    // Temporary placeholder - will be replaced with actual notification system
+    // console.log('Notification:', notification);
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+
+    try {
+      await login({
+        email: form.email,
+        password: form.password
+      });
+      
+      addNotification({
+        type: 'success',
+        title: 'Welcome back!',
+        message: 'You have been successfully logged in',
+        duration: 3000
+      });
+      
+      router.push('/');
+    } catch (error) {
+      addNotification({
+        type: 'error',
+        title: 'Login Failed',
+        message: 'Invalid email or password. Please try again.',
+        duration: 5000
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="w-full max-w-md md:max-w-lg bg-white rounded-2xl shadow-2xl p-10 md:p-12">
       <h1 className="text-2xl font-bold mb-6 text-left">Login</h1>
-      <form className="space-y-6">
+      <form className="space-y-6" onSubmit={handleSubmit}>
         <div className="relative pt-2">
           <input
             id="email"
@@ -52,9 +99,10 @@ export default function LoginPage() {
         </div>
         <button
           type="submit"
-          className="w-full bg-[#c7b8ea] text-black text-base font-semibold py-2 rounded-full hover:bg-[#c7b8ea]/80 transition-colors shadow"
+          disabled={isLoading}
+          className="w-full bg-[#c7b8ea] text-black text-base font-semibold py-2 rounded-full hover:bg-[#c7b8ea]/80 transition-colors shadow disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Login
+          {isLoading ? 'Signing in...' : 'Login'}
         </button>
       </form>
     </div>

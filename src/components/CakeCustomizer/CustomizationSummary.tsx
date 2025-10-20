@@ -36,25 +36,25 @@ export default function CustomizationSummary({
 
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h3>
+      <h3 className="text-sm font-medium text-gray-800 tracking-wide mb-4">Order Summary</h3>
       
       <div className="space-y-3">
         {/* Cake Name */}
         <div className="flex justify-between items-center">
-          <span className="font-medium text-gray-900">{cake.name}</span>
+          <span className="text-sm font-medium text-gray-800 tracking-wide">{cake.name}</span>
         </div>
 
         {/* Size */}
         <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-600">Size: {selectedSize.size}</span>
-          <span className="text-gray-900">KES {selectedSize.price.toLocaleString()}</span>
+          <span className="text-gray-500">Size: {selectedSize.size}</span>
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">KES {selectedSize.price.toLocaleString()}</span>
         </div>
 
         {/* Cream */}
         {selectedCream && (
           <div className="flex justify-between items-center text-sm">
-            <span className="text-gray-600">Cream: {selectedCream.name}</span>
-            <span className="text-gray-900">
+            <span className="text-gray-500">Cream: {selectedCream.name}</span>
+            <span className="text-sm font-semibold text-gray-900 tracking-tight">
               {selectedCream.price > 0 ? `+KES ${selectedCream.price.toLocaleString()}` : 'Included'}
             </span>
           </div>
@@ -62,8 +62,8 @@ export default function CustomizationSummary({
 
         {/* Servings */}
         <div className="flex justify-between items-center text-sm">
-          <span className="text-gray-600">Servings</span>
-          <span className="text-gray-900">{selectedSize.servings} people</span>
+          <span className="text-gray-500">Servings</span>
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">{selectedSize.servings} people</span>
         </div>
 
         {/* Divider */}
@@ -71,21 +71,21 @@ export default function CustomizationSummary({
 
         {/* Total */}
         <div className="flex justify-between items-center">
-          <span className="font-semibold text-gray-900">Total</span>
-          <span className="font-bold text-xl text-[#c7b8ea]">
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">Total</span>
+          <span className="text-sm font-semibold text-gray-900 tracking-tight">
             KES {totalPrice.toLocaleString()}
           </span>
         </div>
 
         {/* Price per serving */}
-        <div className="text-sm text-gray-500 text-center">
+        <div className="text-xs text-gray-500 leading-relaxed text-center">
           KES {(totalPrice / selectedSize.servings).toFixed(0)} per serving
         </div>
       </div>
 
       {/* Additional Info */}
       <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-        <div className="text-xs text-gray-600 space-y-1">
+        <div className="text-xs text-gray-500 leading-relaxed space-y-1">
           <div>• Delivery time: 2-3 business days</div>
           <div>• Free delivery for orders above KES 5,000</div>
           <div>• Custom decorations may require additional time</div>

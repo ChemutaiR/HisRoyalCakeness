@@ -16,7 +16,7 @@ interface CreamSelectorProps {
 export default function CreamSelector({ options, selectedCream, onCreamChange }: CreamSelectorProps) {
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <h3 className="text-lg font-semibold text-gray-900 mb-4">Whipping Cream Type</h3>
+      <h3 className="text-sm font-medium text-gray-800 tracking-wide mb-4">Cake Cream</h3>
       <div className="space-y-3">
         {options.map((cream) => (
           <label
@@ -37,14 +37,14 @@ export default function CreamSelector({ options, selectedCream, onCreamChange }:
               className="text-[#c7b8ea] focus:ring-[#c7b8ea]"
             />
             <div className="flex-1">
-              <div className="font-medium text-gray-900">{cream.name}</div>
+              <div className="text-sm font-medium text-gray-800 tracking-wide">{cream.name}</div>
               {cream.price > 0 && (
-                <div className="text-sm text-gray-600">
+                <div className="text-xs text-gray-500 leading-relaxed">
                   +KES {cream.price.toLocaleString()}
                 </div>
               )}
               {cream.price === 0 && (
-                <div className="text-sm text-green-600 font-medium">Included</div>
+                <div className="text-xs text-green-600 font-medium">Included</div>
               )}
             </div>
             {selectedCream?.name === cream.name && (
@@ -60,7 +60,7 @@ export default function CreamSelector({ options, selectedCream, onCreamChange }:
       
       {selectedCream && (
         <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-          <div className="text-sm text-gray-600">
+          <div className="text-xs text-gray-500 leading-relaxed">
             <span className="font-medium">Selected:</span> {selectedCream.name}
             {selectedCream.price > 0 && (
               <span className="ml-2 text-[#c7b8ea] font-medium">

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Work_Sans, Pacifico } from 'next/font/google';
 import './globals.css';
+// State management providers removed - will be added back when ready
 
 const workSans = Work_Sans({
   subsets: ['latin'],

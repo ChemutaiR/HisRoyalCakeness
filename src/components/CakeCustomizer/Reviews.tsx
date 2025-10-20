@@ -18,7 +18,7 @@ interface ReviewsProps {
   isAuthenticated: boolean;
 }
 
-export default function Reviews({ isAuthenticated }: ReviewsProps) {
+export default function CakeReviews({ isAuthenticated }: ReviewsProps) {
   const [reviews, setReviews] = useState<Review[]>([
     {
       id: '1',
@@ -138,7 +138,7 @@ export default function Reviews({ isAuthenticated }: ReviewsProps) {
                 value={newReview.comment}
                 onChange={(e) => setNewReview(prev => ({ ...prev, comment: e.target.value }))}
                 placeholder="Share your experience with this cake..."
-                className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#c7b8ea] focus:border-transparent resize-none"
+                className="w-full rounded-md border border-gray-300 bg-white px-3 py-2 focus:outline-none focus:ring-2 focus:ring-[#c7b8ea] focus:border-transparent resize-none"
                 rows={3}
                 maxLength={500}
               />
