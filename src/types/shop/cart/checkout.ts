@@ -10,6 +10,7 @@ export interface CheckoutFormData {
   phone: string;
   
   // Delivery Information
+  deliveryZone: string;
   deliveryAddress: Address;
   deliveryDate: string;
   deliveryTime: string;
@@ -17,10 +18,15 @@ export interface CheckoutFormData {
   
   // Payment Information
   paymentMethod: PaymentMethod;
+  mpesaPhoneNumber?: string;
   
   // Additional
   agreeToTerms: boolean;
   subscribeToNewsletter?: boolean;
+  
+  // Order confirmation details
+  orderNumber?: string;
+  transactionId?: string;
 }
 
 export interface PaymentInfo {
@@ -44,12 +50,22 @@ export interface DeliveryInfo {
 }
 
 export interface CheckoutState {
-  step: 'customer' | 'delivery' | 'payment' | 'review' | 'confirmation';
+  step: 'delivery' | 'payment' | 'review' | 'confirmation';
   formData: Partial<CheckoutFormData>;
   paymentInfo?: PaymentInfo;
   deliveryInfo?: DeliveryInfo;
   isLoading: boolean;
   error: string | null;
+}
+
+
+export interface TimeSlot {
+  id: string;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+  maxOrders: number;
+  currentOrders: number;
 }
 
 export interface OrderConfirmation {

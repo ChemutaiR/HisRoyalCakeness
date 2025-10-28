@@ -46,11 +46,8 @@ export interface OrderCustomization {
 
 export interface Address {
   street: string;
-  city: string;
-  state: string;
-  zipCode: string;
+  directions?: string;
   country: string;
-  landmark?: string;
 }
 
 export interface DeliverySlot {

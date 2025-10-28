@@ -12,19 +12,10 @@ export interface BusinessSettings {
 }
 
 export interface BusinessInfo {
-  businessName: string;
-  businessEmail: string;
   phoneNumber: string;
-  businessAddress: string;
-  aboutUs: string;
-  logo?: string;
-  website?: string;
-  socialMedia: {
-    facebook?: string;
-    instagram?: string;
-    twitter?: string;
-    youtube?: string;
-  };
+  socialMedia: string;
+  email?: string;
+  address?: string;
 }
 
 export interface BusinessHours {
@@ -38,10 +29,9 @@ export interface BusinessHours {
 }
 
 export interface DayHours {
-  isOpen: boolean;
-  openTime?: string;
-  closeTime?: string;
-  is24Hours?: boolean;
+  open: string;
+  close: string;
+  closed: boolean;
 }
 
 export interface DeliverySettings {

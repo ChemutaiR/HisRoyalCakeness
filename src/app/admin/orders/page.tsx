@@ -2,59 +2,31 @@
 
 import AdminLayout from '@/components/admin/AdminLayout';
 import ManageOrdersContent from '@/components/admin/orders/ManageOrdersContent';
-import { AdminOrder } from '@/types/admin';
-import { useState, useEffect, useCallback } from 'react';
+import { useAdminOrders } from '@/hooks/admin/useAdminOrders';
+import { useCallback } from 'react';
 
 export default function OrdersPage() {
-  // TODO: Replace with Redux state management
-  // const isAuthenticated = true; // Temporary placeholder - set to true to allow access
-  // const user = { role: 'admin' }; // Temporary placeholder
-  // const addNotification = () => {}; // Temporary placeholder
-
-  // TODO: Replace with actual API calls
-  const [orders, setOrders] = useState<AdminOrder[]>([]);
-  // const [orderHistory, setOrderHistory] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  // Fetch orders data
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        setLoading(true);
-        setOrders([]);
-        // setOrderHistory([]);
-        setError(null); // Clear any previous errors
-      } catch (err) {
-        setError('Failed to load order data');
-      } finally {
-        setLoading(false);
-      }
-    };
-    // Always fetch orders since we disabled authentication checks
-    fetchOrders();
-  }, []);
+  const { 
+    orders, 
+    isLoading, 
+    error, 
+    refreshOrders, 
+    updateOrderStatus,
+    isUpdating
+  } = useAdminOrders();
 
   // Function to move delivered orders to history
   const moveDeliveredToHistory = useCallback(() => {
-    const deliveredOrders = orders.filter((order: AdminOrder) => order.status === 'delivered');
+    const deliveredOrders = orders.filter((order) => order.status === 'delivered');
     if (deliveredOrders.length > 0) {
-      deliveredOrders.map((order: AdminOrder) => ({
-        id: parseInt(order.id.replace('#', '')),
-        orderDate: order.dueDate,
-        deliveryDate: new Date().toISOString().split('T')[0],
-        customer: order.customerName || 'Customer',
-        cake: order.cake,
-        size: order.size || '1 kg',
-        status: 'Delivered'
-      }));
-      
-      // setOrderHistory((prev: any[]) => [...historyEntries, ...prev]);
-      setOrders((prev: AdminOrder[]) => prev.filter((order: AdminOrder) => order.status !== 'delivered'));
+      // Update orders in the store to move delivered orders to history
+      deliveredOrders.forEach(order => {
+        updateOrderStatus(order.id, 'delivered');
+      });
     }
-  }, [orders]);
+  }, [orders, updateOrderStatus]);
 
-  if (loading) {
+  if (isLoading) {
     return (
       <AdminLayout title="Loading..." description="Loading orders...">
         <div className="flex items-center justify-center py-8">
@@ -75,7 +47,7 @@ export default function OrdersPage() {
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Orders Unavailable</h1>
             <p className="text-gray-600 mb-6">{error}</p>
             <button
-              onClick={() => window.location.reload()}
+              onClick={refreshOrders}
               className="px-4 py-2 bg-[#c7b8ea] text-black rounded-lg hover:bg-[#c7b8ea]/80 transition-colors"
             >
               Try Again
@@ -93,8 +65,10 @@ export default function OrdersPage() {
     >
       <ManageOrdersContent 
         orders={orders} 
-        setOrders={setOrders} 
-        moveDeliveredToHistory={moveDeliveredToHistory} 
+        moveDeliveredToHistory={moveDeliveredToHistory}
+        updateOrderStatus={updateOrderStatus}
+        refreshOrders={refreshOrders}
+        isUpdating={isUpdating}
       />
     </AdminLayout>
   );

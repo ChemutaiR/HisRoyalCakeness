@@ -13,6 +13,7 @@ export interface AdminProduct {
   }>;
   whippingCreamOptions: string[];
   bakingTinOptions: string[];
+  defaultCreamIndex: number;
   isActive: boolean;
   createdAt: string;
   updatedAt: string;

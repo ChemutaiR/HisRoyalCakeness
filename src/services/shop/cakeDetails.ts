@@ -1,10 +1,11 @@
 import { type Cake } from '@/types/shop/catalog';
-import { type Size, type CreamOption, type ContainerType } from '@/types/shop/catalog';
+import { type Size, type CreamOption, type ContainerType, type Decoration } from '@/types/shop/catalog';
 
 export interface CustomizationState {
   selectedSize: Size | null;
   selectedCream: CreamOption | null;
   selectedContainerType: ContainerType | null;
+  selectedDecorations: Decoration[];
   customNotes: string;
   uploadedImages: string[];
 }
@@ -67,6 +68,11 @@ export class CakeDetailsService {
       totalPrice += customization.selectedCream.price;
     }
 
+    // Decorations price
+    if (customization.selectedDecorations) {
+      totalPrice += customization.selectedDecorations.reduce((sum, decoration) => sum + decoration.price, 0);
+    }
+
     // Container type price (no price in existing type)
     // if (customization.selectedContainerType) {
     //   totalPrice += customization.selectedContainerType.price;
@@ -111,17 +117,20 @@ export class CakeDetailsService {
   ): {
     basePrice: number;
     creamPrice: number;
+    decorationsPrice: number;
     containerPrice: number;
     total: number;
   } {
     const basePrice = customization.selectedSize?.price || 0;
     const creamPrice = customization.selectedCream?.price || 0;
+    const decorationsPrice = customization.selectedDecorations?.reduce((sum, decoration) => sum + decoration.price, 0) || 0;
     const containerPrice = 0; // No price in existing ContainerType
-    const total = basePrice + creamPrice + containerPrice;
+    const total = basePrice + creamPrice + decorationsPrice + containerPrice;
 
     return {
       basePrice,
       creamPrice,
+      decorationsPrice,
       containerPrice,
       total
     };
@@ -171,6 +180,7 @@ export class CakeDetailsService {
     size: string;
     cream: string;
     container: string;
+    decorations: string[];
     notes: string;
     images: string[];
     totalPrice: number;
@@ -181,6 +191,7 @@ export class CakeDetailsService {
       size: customization.selectedSize?.size || '',
       cream: customization.selectedCream?.name || '',
       container: customization.selectedContainerType?.name || '',
+      decorations: customization.selectedDecorations?.map(d => d.name) || [],
       notes: customization.customNotes,
       images: customization.uploadedImages,
       totalPrice: this.calculateTotalPrice(cake, customization)

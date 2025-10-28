@@ -1,16 +1,34 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Save, Globe, Clock, MapPin, Phone, Mail } from 'lucide-react';
+import { Save, Globe, Clock, Phone, Instagram, AlertCircle, Loader2, Edit, X } from 'lucide-react';
+import { BusinessInfo, BusinessHours } from '@/types/admin/settings';
+import { useSettings } from '@/hooks/admin/useSettings';
+import { businessFormSchema } from '@/lib/validation';
 
 export default function BusinessSettingsPage() {
-  const [formData, setFormData] = useState({
-    businessName: 'His Royal Cakeness',
-    businessEmail: 'info@hisroyalcakeness.com',
-    phoneNumber: '+254 700 123 456',
-    businessAddress: '123 Cake Street, Nairobi, Kenya',
-    aboutUs: 'We are a premium cake bakery specializing in custom-designed cakes for all occasions. Our master bakers create delicious, beautiful cakes that make every celebration special.',
+  const {
+    businessInfo,
+    businessHours,
+    isLoading,
+    isUpdating,
+    hasError,
+    errorMessage,
+    lastSaved: _lastSaved,
+    canSave,
+    phoneValidation,
+    socialMediaValidation,
+    updateSettings,
+    setField,
+    setBusinessHours,
+    clearError,
+    resetForm
+  } = useSettings();
+
+  const [formData, setFormData] = useState<BusinessInfo & { businessHours: BusinessHours }>({
+    phoneNumber: '',
+    socialMedia: '',
     businessHours: {
       monday: { open: '08:00', close: '18:00', closed: false },
       tuesday: { open: '08:00', close: '18:00', closed: false },
@@ -22,32 +40,73 @@ export default function BusinessSettingsPage() {
     }
   });
 
-  const [hasChanges, setHasChanges] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
 
-  const handleInputChange = (field: string, value: string) => {
+  // Sync form data with store data
+  useEffect(() => {
+    if (businessInfo && businessHours) {
+      setFormData({
+        phoneNumber: businessInfo.phoneNumber,
+        socialMedia: businessInfo.socialMedia,
+        businessHours: businessHours
+      });
+    }
+  }, [businessInfo, businessHours]);
+
+  const handleInputChange = (field: keyof BusinessInfo, value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
-    setHasChanges(true);
+    setField(field, value);
   };
 
   const handleHoursChange = (day: string, field: string, value: string | boolean) => {
+    const updatedHours = {
+      ...formData.businessHours[day as keyof BusinessHours],
+      [field]: value
+    };
+    
     setFormData(prev => ({
       ...prev,
       businessHours: {
         ...prev.businessHours,
-        [day]: {
-          ...prev.businessHours[day as keyof typeof prev.businessHours],
-          [field]: value
-        }
+        [day]: updatedHours
       }
     }));
-    setHasChanges(true);
+    
+    setBusinessHours(day as keyof BusinessHours, updatedHours);
   };
 
-  const handleSave = () => {
-    // Here you would typically save to your backend
-    // console.log('Saving business settings:', formData);
-    setHasChanges(false);
-    // Show success message
+  const handleSave = async () => {
+    try {
+      // Validate form data with Zod before saving
+      const validationResult = businessFormSchema.safeParse(formData);
+      
+      if (!validationResult.success) {
+        // Validation failed - could show user-friendly error messages here
+        return;
+      }
+      
+      await updateSettings(formData);
+      setIsEditing(false);
+      resetForm();
+    } catch (error) {
+      // Handle save error - could show user notification here
+    }
+  };
+
+  const handleEdit = () => {
+    setIsEditing(true);
+  };
+
+  const handleCancel = () => {
+    setIsEditing(false);
+    // Reset form data to original values
+    if (businessInfo && businessHours) {
+      setFormData({
+        phoneNumber: businessInfo.phoneNumber,
+        socialMedia: businessInfo.socialMedia,
+        businessHours: businessHours
+      });
+    }
   };
 
   const days = [
@@ -69,48 +128,78 @@ export default function BusinessSettingsPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Business Information</h2>
-            <p className="text-gray-600">Update your business details and contact information.</p>
+            <h2 className="text-2xl font-medium text-gray-800 tracking-wide mb-0.5">Business Information</h2>
+            <p className="text-sm text-gray-500 leading-relaxed">Update your business details and contact information.</p>
           </div>
-          {hasChanges && (
-            <button
-              onClick={handleSave}
-              className="bg-[#c7b8ea] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#c7b8ea]/80 transition-colors flex items-center gap-2"
-            >
-              <Save className="w-4 h-4" />
-              Save Changes
-            </button>
-          )}
+          <div className="flex space-x-3">
+            {!isEditing ? (
+              <button
+                onClick={handleEdit}
+                className="bg-[#c7b8ea] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#c7b8ea]/80 transition-colors flex items-center gap-2"
+              >
+                <Edit className="w-4 h-4" />
+                Edit
+              </button>
+            ) : (
+              <>
+                <button
+                  onClick={handleCancel}
+                  className="px-4 py-2 bg-gray-500 text-white rounded-md hover:bg-gray-600 transition-colors flex items-center space-x-2"
+                >
+                  <X className="w-4 h-4" />
+                  <span>Cancel</span>
+                </button>
+                {canSave && (
+                  <button
+                    onClick={handleSave}
+                    disabled={isUpdating}
+                    className="bg-[#c7b8ea] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#c7b8ea]/80 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {isUpdating ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <Save className="w-4 h-4" />
+                    )}
+                    {isUpdating ? 'Saving...' : 'Save Changes'}
+                  </button>
+                )}
+              </>
+            )}
+          </div>
         </div>
+
+        {/* Error Message */}
+        {hasError && (
+          <div className="bg-red-50 border border-red-200 rounded-md p-4 flex items-center space-x-2 mb-6">
+            <AlertCircle className="w-5 h-5 text-red-500" />
+            <div>
+              <p className="text-red-800 font-medium">Error</p>
+              <p className="text-red-600 text-sm">{errorMessage}</p>
+            </div>
+            <button
+              onClick={clearError}
+              className="ml-auto text-red-500 hover:text-red-700"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {/* Loading State */}
+        {isLoading && (
+          <div className="bg-blue-50 border border-blue-200 rounded-md p-4 flex items-center space-x-2 mb-6">
+            <Loader2 className="w-5 h-5 text-blue-500 animate-spin" />
+            <p className="text-blue-800">Loading business settings...</p>
+          </div>
+        )}
 
         {/* Business Information */}
         <div className="bg-white rounded-lg shadow-sm p-6 mb-6">
           <div className="flex items-center gap-2 mb-4">
             <Globe className="w-5 h-5 text-[#c7b8ea]" />
-            <h3 className="text-lg font-semibold text-gray-800">Basic Information</h3>
+            <h3 className="text-sm font-medium text-gray-800 tracking-wide">Basic Information</h3>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Business Name</label>
-              <input 
-                type="text" 
-                value={formData.businessName}
-                onChange={(e) => handleInputChange('businessName', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]" 
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Business Email</label>
-              <div className="relative">
-                <Mail className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
-                <input 
-                  type="email" 
-                  value={formData.businessEmail}
-                  onChange={(e) => handleInputChange('businessEmail', e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]" 
-                />
-              </div>
-            </div>
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
               <div className="relative">
@@ -119,31 +208,42 @@ export default function BusinessSettingsPage() {
                   type="tel" 
                   value={formData.phoneNumber}
                   onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]" 
+                  readOnly={!isEditing}
+                  className={`w-full pl-10 pr-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    !isEditing 
+                      ? 'bg-gray-50 border-gray-200 cursor-not-allowed' 
+                      : phoneValidation.isValid 
+                        ? 'border-gray-300 focus:ring-[#c7b8ea]' 
+                        : 'border-red-300 focus:ring-red-500'
+                  }`}
                 />
+                {!phoneValidation.isValid && phoneValidation.message && (
+                  <p className="text-red-600 text-sm mt-1">{phoneValidation.message}</p>
+                )}
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Business Address</label>
+              <label className="block text-sm font-medium text-gray-700 mb-2">Social Media</label>
               <div className="relative">
-                <MapPin className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
+                <Instagram className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 w-4 h-4" />
                 <input 
                   type="text" 
-                  value={formData.businessAddress}
-                  onChange={(e) => handleInputChange('businessAddress', e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]" 
+                  value={formData.socialMedia}
+                  onChange={(e) => handleInputChange('socialMedia', e.target.value)}
+                  readOnly={!isEditing}
+                  className={`w-full pl-10 pr-3 py-2 border rounded-md focus:outline-none focus:ring-2 ${
+                    !isEditing 
+                      ? 'bg-gray-50 border-gray-200 cursor-not-allowed' 
+                      : socialMediaValidation.isValid 
+                        ? 'border-gray-300 focus:ring-[#c7b8ea]' 
+                        : 'border-red-300 focus:ring-red-500'
+                  }`}
+                  placeholder="@username"
                 />
+                {!socialMediaValidation.isValid && socialMediaValidation.message && (
+                  <p className="text-red-600 text-sm mt-1">{socialMediaValidation.message}</p>
+                )}
               </div>
-            </div>
-            <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-2">About Us</label>
-              <textarea 
-                rows={4} 
-                value={formData.aboutUs}
-                onChange={(e) => handleInputChange('aboutUs', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]"
-                placeholder="Tell customers about your bakery..."
-              />
             </div>
           </div>
         </div>
@@ -152,7 +252,7 @@ export default function BusinessSettingsPage() {
         <div className="bg-white rounded-lg shadow-sm p-6">
           <div className="flex items-center gap-2 mb-4">
             <Clock className="w-5 h-5 text-[#c7b8ea]" />
-            <h3 className="text-lg font-semibold text-gray-800">Business Hours</h3>
+            <h3 className="text-sm font-medium text-gray-800 tracking-wide">Business Hours</h3>
           </div>
           <div className="space-y-4">
             {days.map(day => {

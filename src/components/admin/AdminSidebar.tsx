@@ -15,7 +15,9 @@ import {
   Star,
   Settings,
   UserCheck,
-  Home
+  Home,
+  Store,
+  Palette
 } from 'lucide-react';
 
 interface AdminSidebarProps {
@@ -24,6 +26,12 @@ interface AdminSidebarProps {
 }
 
 const navigationItems = [
+  {
+    name: 'Back to Shop',
+    href: '/shop/catalog',
+    icon: Store,
+    current: false
+  },
   {
     name: 'Dashboard',
     href: '/admin',
@@ -50,6 +58,12 @@ const navigationItems = [
     name: 'Products',
     href: '/admin/products',
     icon: Cake,
+    current: false
+  },
+  {
+    name: 'Decorations',
+    href: '/admin/decorations',
+    icon: Palette,
     current: false
   },
   {
@@ -82,11 +96,10 @@ const navigationItems = [
   },
   {
     name: 'Settings',
-    href: '/admin/settings',
+    href: '/admin/settings/business',
     icon: Settings,
     current: false,
     children: [
-      { name: 'General', href: '/admin/settings' },
       { name: 'Business', href: '/admin/settings/business' },
       { name: 'Delivery', href: '/admin/settings/delivery' },
       { name: 'Payment', href: '/admin/settings/payment' },
@@ -120,6 +133,9 @@ export default function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProp
   const isActive = (href: string) => {
     if (href === '/admin') {
       return pathname === '/admin';
+    }
+    if (href === '/shop/catalog') {
+      return pathname.startsWith('/shop');
     }
     return pathname.startsWith(href);
   };
@@ -173,15 +189,27 @@ export default function AdminSidebar({ isCollapsed, onToggle }: AdminSidebarProp
                       ? 'bg-[#c7b8ea] text-black'
                       : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                   }`}>
-                    <Link
-                      href={item.href}
-                      className="flex items-center flex-1"
-                    >
-                      <Icon className={`w-5 h-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
-                      {!isCollapsed && (
-                        <span className="flex-1">{item.name}</span>
-                      )}
-                    </Link>
+                    {item.children ? (
+                      <button
+                        onClick={() => toggleExpanded(item.name)}
+                        className="flex items-center flex-1 text-left"
+                      >
+                        <Icon className={`w-5 h-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                        {!isCollapsed && (
+                          <span className="flex-1">{item.name}</span>
+                        )}
+                      </button>
+                    ) : (
+                      <Link
+                        href={item.href}
+                        className="flex items-center flex-1"
+                      >
+                        <Icon className={`w-5 h-5 ${isCollapsed ? 'mx-auto' : 'mr-3'}`} />
+                        {!isCollapsed && (
+                          <span className="flex-1">{item.name}</span>
+                        )}
+                      </Link>
+                    )}
                     {!isCollapsed && item.children && (
                       <button
                         onClick={(e) => {

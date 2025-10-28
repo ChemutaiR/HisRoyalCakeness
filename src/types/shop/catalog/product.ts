@@ -1,5 +1,7 @@
 // Product and catalog-related type definitions
 
+import { Decoration } from './decorations';
+
 export interface Size {
   size: string;
   price: number;
@@ -90,6 +92,7 @@ export interface CustomizationOptions {
   selectedSize: Size | null;
   selectedCream: CreamOption | null;
   selectedContainerType: ContainerType | null;
+  selectedDecorations: Decoration[];
   customNotes: string;
   uploadedImages: string[];
 }

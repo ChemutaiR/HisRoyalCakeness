@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useProductDetails } from './useProductDetails';
 import { CakeDetailsService, type CustomizationState } from '@/services/shop/cakeDetails';
-import { type Size, type CreamOption, type ContainerType } from '@/types/shop/catalog';
+import { type Size, type CreamOption, type ContainerType, type Decoration } from '@/types/shop/catalog';
 
 export interface UseCakeDetailsReturn {
   // Basic cake data
@@ -13,6 +13,7 @@ export interface UseCakeDetailsReturn {
   selectedSize: Size | null;
   selectedCream: CreamOption | null;
   selectedContainerType: ContainerType | null;
+  selectedDecorations: Decoration[];
   customNotes: string;
   uploadedImages: string[];
   
@@ -25,6 +26,7 @@ export interface UseCakeDetailsReturn {
   setSelectedSize: (size: Size | null) => void;
   setSelectedCream: (cream: CreamOption | null) => void;
   setSelectedContainerType: (container: ContainerType | null) => void;
+  setSelectedDecorations: (decorations: Decoration[]) => void;
   setCustomNotes: (notes: string) => void;
   setUploadedImages: (images: string[]) => void;
   addUploadedImage: (image: string) => void;
@@ -54,6 +56,7 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
   const [selectedSize, setSelectedSize] = useState<Size | null>(null);
   const [selectedCream, setSelectedCream] = useState<CreamOption | null>(null);
   const [selectedContainerType, setSelectedContainerType] = useState<ContainerType | null>(null);
+  const [selectedDecorations, setSelectedDecorations] = useState<Decoration[]>([]);
   const [customNotes, setCustomNotes] = useState('');
   const [uploadedImages, setUploadedImages] = useState<string[]>([]);
 
@@ -87,12 +90,13 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
       selectedSize,
       selectedCream,
       selectedContainerType,
+      selectedDecorations,
       customNotes,
       uploadedImages
     };
     
     return CakeDetailsService.calculateTotalPrice(cake, customization);
-  }, [cake, selectedSize, selectedCream, selectedContainerType, customNotes, uploadedImages]);
+  }, [cake, selectedSize, selectedCream, selectedContainerType, selectedDecorations, customNotes, uploadedImages]);
 
   const _priceBreakdown = useMemo(() => {
     if (!cake) {
@@ -103,24 +107,26 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
       selectedSize,
       selectedCream,
       selectedContainerType,
+      selectedDecorations,
       customNotes,
       uploadedImages
     };
     
     return CakeDetailsService.getPriceBreakdown(cake, customization);
-  }, [cake, selectedSize, selectedCream, selectedContainerType, customNotes, uploadedImages]);
+  }, [cake, selectedSize, selectedCream, selectedContainerType, selectedDecorations, customNotes, uploadedImages]);
 
   const { isValid: _isCustomizationValid, errors: _validationErrors } = useMemo(() => {
     const customization: CustomizationState = {
       selectedSize,
       selectedCream,
       selectedContainerType,
+      selectedDecorations,
       customNotes,
       uploadedImages
     };
     
     return CakeDetailsService.validateCustomization(customization);
-  }, [selectedSize, selectedCream, selectedContainerType, customNotes, uploadedImages]);
+  }, [selectedSize, selectedCream, selectedContainerType, selectedDecorations, customNotes, uploadedImages]);
 
   // Actions
   const _addUploadedImage = (image: string) => {
@@ -135,6 +141,7 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
     setSelectedSize(null);
     setSelectedCream(null);
     setSelectedContainerType(null);
+    setSelectedDecorations([]);
     setCustomNotes('');
     setUploadedImages([]);
   };
@@ -146,6 +153,7 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
       selectedSize,
       selectedCream,
       selectedContainerType,
+      selectedDecorations,
       customNotes,
       uploadedImages
     };
@@ -160,6 +168,21 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
     }
   }, [availableSizes, selectedSize]);
 
+  // Auto-select default cream (or first) when cake loads
+  useEffect(() => {
+    if (!cake) return;
+    if (selectedCream) return;
+    if (!availableCreamOptions || availableCreamOptions.length === 0) return;
+
+    // Prefer defaultCreamIndex from cake if present
+    const defaultIndex = typeof (cake as any).defaultCreamIndex === 'number' && (cake as any).defaultCreamIndex >= 0
+      ? (cake as any).defaultCreamIndex
+      : 0;
+
+    const safeIndex = defaultIndex < availableCreamOptions.length ? defaultIndex : 0;
+    setSelectedCream(availableCreamOptions[safeIndex]);
+  }, [cake, availableCreamOptions, selectedCream, setSelectedCream]);
+
   return {
     // Basic cake data
     cake,
@@ -170,6 +193,7 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
     selectedSize,
     selectedCream,
     selectedContainerType,
+    selectedDecorations,
     customNotes,
     uploadedImages,
     
@@ -182,6 +206,7 @@ export function useCakeDetails(cakeId: number): UseCakeDetailsReturn {
     setSelectedSize,
     setSelectedCream,
     setSelectedContainerType,
+    setSelectedDecorations,
     setCustomNotes,
     setUploadedImages,
     addUploadedImage: _addUploadedImage,

@@ -1,5 +1,7 @@
 'use client';
 
+import { Decoration } from '@/types/shop/catalog/decorations';
+
 interface Size {
   size: string;
   price: number;
@@ -21,6 +23,7 @@ interface CustomizationSummaryProps {
   cake: Cake;
   selectedSize: Size | null;
   selectedCream: CreamOption | null;
+  selectedDecorations: Decoration[];
   totalPrice: number;
 }
 
@@ -28,6 +31,7 @@ export default function CustomizationSummary({
   cake, 
   selectedSize, 
   selectedCream, 
+  selectedDecorations,
   totalPrice 
 }: CustomizationSummaryProps) {
   if (!selectedSize) {
@@ -66,6 +70,21 @@ export default function CustomizationSummary({
           <span className="text-sm font-semibold text-gray-900 tracking-tight">{selectedSize.servings} people</span>
         </div>
 
+        {/* Decorations */}
+        {selectedDecorations && selectedDecorations.length > 0 && (
+          <div className="space-y-2">
+            <div className="text-sm text-gray-500">Decorations:</div>
+            {selectedDecorations.map((decoration, index) => (
+              <div key={decoration.id} className="flex justify-between items-center text-sm ml-4">
+                <span className="text-gray-500">• {decoration.name}</span>
+                <span className="text-sm font-semibold text-gray-900 tracking-tight">
+                  +KES {decoration.price.toLocaleString()}
+                </span>
+              </div>
+            ))}
+          </div>
+        )}
+
         {/* Divider */}
         <div className="border-t border-gray-200 my-3"></div>
 
@@ -77,20 +96,8 @@ export default function CustomizationSummary({
           </span>
         </div>
 
-        {/* Price per serving */}
-        <div className="text-xs text-gray-500 leading-relaxed text-center">
-          KES {(totalPrice / selectedSize.servings).toFixed(0)} per serving
-        </div>
       </div>
 
-      {/* Additional Info */}
-      <div className="mt-4 p-3 bg-gray-50 rounded-lg">
-        <div className="text-xs text-gray-500 leading-relaxed space-y-1">
-          <div>• Delivery time: 2-3 business days</div>
-          <div>• Free delivery for orders above KES 5,000</div>
-          <div>• Custom decorations may require additional time</div>
-        </div>
-      </div>
     </div>
   );
 } 

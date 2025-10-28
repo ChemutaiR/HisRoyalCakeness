@@ -185,6 +185,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
         prices: formData.prices,
         whippingCreamOptions: formData.whippingCreamOptions,
         bakingTinOptions: formData.bakingTinOptions,
+        defaultCreamIndex: 0,
         isActive: formData.isActive,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()

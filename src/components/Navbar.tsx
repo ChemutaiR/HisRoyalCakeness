@@ -5,12 +5,16 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useCart } from '@/hooks/shop/useCart';
 
 const Navbar = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const userButtonRef = useRef<HTMLButtonElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
+  
+  // Get cart data for cart indicator
+  const { totalItems, toggleCart: _toggleCart } = useCart();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -96,12 +100,14 @@ const Navbar = () => {
             <button
               className="p-2 rounded-full hover:bg-white/10 transition-colors relative"
               onClick={() => router.push('/shop/cart')}
-              aria-label="Cart"
+              aria-label={`Cart (${totalItems} items)`}
             >
               <ShoppingCart className="h-6 w-6 text-white" />
-              <span className="absolute -top-1 -right-1 bg-white text-black text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                0
-              </span>
+              {totalItems > 0 && (
+                <span className="absolute -top-1 -right-1 bg-[#c7b8ea] text-black text-xs rounded-full h-5 w-5 flex items-center justify-center font-semibold">
+                  {totalItems > 99 ? '99+' : totalItems}
+                </span>
+              )}
             </button>
           </div>
         </div>

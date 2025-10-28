@@ -195,6 +195,12 @@ export class AdminProductsService {
 
     if (!productData.whippingCreamOptions || productData.whippingCreamOptions.length === 0) {
       errors.push('At least one whipping cream option is required');
+    } else {
+      // Enforce: first option is the default and must be zero-cost (no "+X" in label)
+      const defaultOption = productData.whippingCreamOptions[0];
+      if (/\(\+\d+\)/.test(defaultOption)) {
+        errors.push('Default cream (first option) must have no extra cost');
+      }
     }
 
     if (!productData.bakingTinOptions || productData.bakingTinOptions.length === 0) {

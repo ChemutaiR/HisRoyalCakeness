@@ -72,6 +72,7 @@ export function shopToAdmin(cake: Cake): Omit<AdminProduct, 'id' | 'createdAt' |
     })),
     whippingCreamOptions: ['Vanilla Cream'], // Default cream option
     bakingTinOptions: ['Round Tin'], // Default tin option
+    defaultCreamIndex: 0, // Set first cream option as default
     isActive: cake.featured // Map featured to isActive
   };
 }

@@ -19,6 +19,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Chocolate Cream (+200)', 'Strawberry Cream (+200)', 'Buttercream (+300)', 'Whipped Cream (+150)'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-15T10:00:00Z',
     updatedAt: '2024-01-15T10:00:00Z'
@@ -39,6 +40,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Chocolate Cream (+200)', 'Buttercream (+300)'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-16T10:00:00Z',
     updatedAt: '2024-01-16T10:00:00Z'
@@ -59,6 +61,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Orange Cream', 'Vanilla Cream', 'Buttercream (+300)'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-17T10:00:00Z',
     updatedAt: '2024-01-17T10:00:00Z'
@@ -79,6 +82,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Blueberry Cream', 'Vanilla Cream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-18T10:00:00Z',
     updatedAt: '2024-01-18T10:00:00Z'
@@ -99,6 +103,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Whipped Cream', 'Vanilla Cream', 'Cherry Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-19T10:00:00Z',
     updatedAt: '2024-01-19T10:00:00Z'
@@ -119,6 +124,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Chocolate Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-20T10:00:00Z',
     updatedAt: '2024-01-20T10:00:00Z'
@@ -139,6 +145,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Whipped Cream', 'Chocolate Cream', 'Cherry Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-21T10:00:00Z',
     updatedAt: '2024-01-21T10:00:00Z'
@@ -159,6 +166,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Strawberry Cream', 'Whipped Cream', 'Chocolate Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-22T10:00:00Z',
     updatedAt: '2024-01-22T10:00:00Z'
@@ -179,6 +187,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Orange Cream', 'Chocolate Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-23T10:00:00Z',
     updatedAt: '2024-01-23T10:00:00Z'
@@ -199,6 +208,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Lemon Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-24T10:00:00Z',
     updatedAt: '2024-01-24T10:00:00Z'
@@ -219,6 +229,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Cream Cheese', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-25T10:00:00Z',
     updatedAt: '2024-01-25T10:00:00Z'
@@ -239,6 +250,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Buttercream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-26T10:00:00Z',
     updatedAt: '2024-01-26T10:00:00Z'
@@ -259,6 +271,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Chocolate Cream', 'Fudge Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-27T10:00:00Z',
     updatedAt: '2024-01-27T10:00:00Z'
@@ -279,6 +292,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Mint Cream', 'Chocolate Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-28T10:00:00Z',
     updatedAt: '2024-01-28T10:00:00Z'
@@ -299,6 +313,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Cream Cheese', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-29T10:00:00Z',
     updatedAt: '2024-01-29T10:00:00Z'
@@ -319,6 +334,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Buttercream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-30T10:00:00Z',
     updatedAt: '2024-01-30T10:00:00Z'
@@ -339,6 +355,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Coconut Cream', 'Pineapple Cream', 'Vanilla Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-01-31T10:00:00Z',
     updatedAt: '2024-01-31T10:00:00Z'
@@ -359,6 +376,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Passion Fruit Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-01T10:00:00Z',
     updatedAt: '2024-02-01T10:00:00Z'
@@ -379,6 +397,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Banana Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-02T10:00:00Z',
     updatedAt: '2024-02-02T10:00:00Z'
@@ -399,6 +418,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Mocha Cream', 'Chocolate Cream', 'Coffee Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-03T10:00:00Z',
     updatedAt: '2024-02-03T10:00:00Z'
@@ -419,6 +439,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Buttercream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-04T10:00:00Z',
     updatedAt: '2024-02-04T10:00:00Z'
@@ -439,6 +460,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Strawberry Cream', 'Vanilla Cream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-05T10:00:00Z',
     updatedAt: '2024-02-05T10:00:00Z'
@@ -459,6 +481,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Coconut Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-06T10:00:00Z',
     updatedAt: '2024-02-06T10:00:00Z'
@@ -479,6 +502,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Butterscotch Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-07T10:00:00Z',
     updatedAt: '2024-02-07T10:00:00Z'
@@ -499,6 +523,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Caramel Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-08T10:00:00Z',
     updatedAt: '2024-02-08T10:00:00Z'
@@ -519,6 +544,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Orange Cream', 'Coconut Cream', 'Vanilla Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-09T10:00:00Z',
     updatedAt: '2024-02-09T10:00:00Z'
@@ -539,6 +565,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Lemon Cream', 'Coconut Cream', 'Vanilla Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-10T10:00:00Z',
     updatedAt: '2024-02-10T10:00:00Z'
@@ -559,6 +586,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Orange Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-11T10:00:00Z',
     updatedAt: '2024-02-11T10:00:00Z'
@@ -579,6 +607,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Lemon Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-12T10:00:00Z',
     updatedAt: '2024-02-12T10:00:00Z'
@@ -599,6 +628,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Buttercream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-13T10:00:00Z',
     updatedAt: '2024-02-13T10:00:00Z'
@@ -619,6 +649,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Buttercream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-14T10:00:00Z',
     updatedAt: '2024-02-14T10:00:00Z'
@@ -639,6 +670,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Chocolate Cream', 'Vanilla Cream', 'Buttercream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-15T10:00:00Z',
     updatedAt: '2024-02-15T10:00:00Z'
@@ -659,6 +691,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vegan Cream', 'Vanilla Cream', 'Coconut Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-16T10:00:00Z',
     updatedAt: '2024-02-16T10:00:00Z'
@@ -679,6 +712,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Lemon Cream', 'Blueberry Cream', 'Vanilla Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Heart Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-17T10:00:00Z',
     updatedAt: '2024-02-17T10:00:00Z'
@@ -699,6 +733,7 @@ export const adminProductsData: AdminProduct[] = [
     ],
     whippingCreamOptions: ['Vanilla Cream', 'Buttercream', 'Whipped Cream'],
     bakingTinOptions: ['Round Tin', 'Square Tin', 'Rectangle Tin'],
+    defaultCreamIndex: 0,
     isActive: true,
     createdAt: '2024-02-18T10:00:00Z',
     updatedAt: '2024-02-18T10:00:00Z'

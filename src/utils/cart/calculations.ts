@@ -31,17 +31,17 @@ export function calculateCartSubtotal(items: CartItem[], customLoafItems: Custom
 }
 
 /**
- * Calculate delivery fee
+ * Calculate delivery fee based on zone and subtotal
  */
 export function calculateDeliveryFee(
   subtotal: number,
-  freeDeliveryThreshold: number = 2000,
-  deliveryFee: number = 200
+  zoneDeliveryFee: number = 0,
+  freeDeliveryThreshold: number = 2000
 ): number {
   if (subtotal >= freeDeliveryThreshold) {
     return 0;
   }
-  return deliveryFee;
+  return zoneDeliveryFee;
 }
 
 /**

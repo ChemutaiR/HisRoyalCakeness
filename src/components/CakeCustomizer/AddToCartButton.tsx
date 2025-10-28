@@ -2,8 +2,8 @@
 
 import { useState } from 'react';
 import { ShoppingCart, Check } from 'lucide-react';
-// State management imports removed - will be replaced with Redux
-import { CustomizationOptions } from '@/types/shop/catalog';
+import { useCart } from '@/hooks/shop/useCart';
+import { CustomizationOptions, Decoration } from '@/types/shop/catalog';
 
 interface Size {
   size: string;
@@ -20,6 +20,14 @@ interface CreamOption {
 interface CakeProduct {
   id: number;
   name: string;
+  description: string;
+  image: string;
+  prices: Array<{
+    weight: string;
+    amount: number;
+    servings: number;
+  }>;
+  featured: boolean;
   basePrice: number;
 }
 
@@ -27,6 +35,7 @@ interface AddToCartButtonProps {
   cake: CakeProduct;
   selectedSize: Size | null;
   selectedCream: CreamOption | null;
+  selectedDecorations: Decoration[];
   customNotes: string;
   uploadedImages: string[];
   totalPrice: number;
@@ -37,6 +46,7 @@ export default function AddToCartButton({
   cake,
   selectedSize,
   selectedCream,
+  selectedDecorations,
   customNotes,
   uploadedImages,
   totalPrice,
@@ -45,18 +55,10 @@ export default function AddToCartButton({
   const [isAdding, setIsAdding] = useState(false);
   const [isAdded, setIsAdded] = useState(false);
   
-  // TODO: Replace with Redux state management
-  const addItem = (cake: CakeProduct, customization: CustomizationOptions, quantity: number) => {
-    // Temporary placeholder - will be replaced with actual cart logic
-    // console.log('Add to cart:', { cake, customization, quantity });
-  };
-  
-  const addNotification = (notification: { type: string; title: string; message: string; duration?: number }) => {
-    // Temporary placeholder - will be replaced with actual notification system
-    // console.log('Notification:', notification);
-  };
+  // Use cart hook for real cart functionality
+  const { addItem, isLoading, error } = useCart();
 
-  const isDisabled = !selectedSize || !selectedCream || isAdding;
+  const isDisabled = !selectedSize || !selectedCream || isAdding || isLoading;
 
   const handleAddToCart = async () => {
     if (isDisabled) return;
@@ -69,30 +71,20 @@ export default function AddToCartButton({
         selectedSize,
         selectedCream,
         selectedContainerType: { name: 'Circle', value: 'circle' }, // Default container
+        selectedDecorations,
         customNotes,
         uploadedImages,
       };
 
-      // Add to cart using the store
-      addItem(cake, customization, 1);
+      // Add to cart using the real cart hook
+      await addItem(cake, customization, 1);
       
       setIsAdded(true);
-      addNotification({
-        type: 'success',
-        title: 'Added to Cart!',
-        message: `${cake.name} has been added to your cart`,
-        duration: 3000
-      });
       
       // Reset added state after 2 seconds
       setTimeout(() => setIsAdded(false), 2000);
     } catch (error) {
-      addNotification({
-        type: 'error',
-        title: 'Error',
-        message: 'Failed to add item to cart',
-        duration: 5000
-      });
+      // console.error('Failed to add item to cart:', error);
     } finally {
       setIsAdding(false);
     }
@@ -126,7 +118,7 @@ export default function AddToCartButton({
             : 'bg-[#c7b8ea] text-black hover:bg-[#c7b8ea]/80 shadow-lg hover:shadow-xl'
         }`}
       >
-        {isAdding ? (
+        {(isAdding || isLoading) ? (
           <>
             <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
             <span>Adding to Cart...</span>
@@ -144,13 +136,19 @@ export default function AddToCartButton({
         )}
       </button>
 
-      {isDisabled && selectedSize && (
+      {error && (
+        <p className="text-sm text-red-500 text-center mt-2">
+          {error}
+        </p>
+      )}
+
+      {isDisabled && selectedSize && !isLoading && (
         <p className="text-sm text-gray-500 text-center mt-2">
           Please select all options to continue
         </p>
       )}
 
-      {!selectedSize && (
+      {!selectedSize && !isLoading && (
         <p className="text-sm text-gray-500 text-center mt-2">
           Please select a size to continue
         </p>

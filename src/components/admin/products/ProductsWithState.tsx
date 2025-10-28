@@ -1,9 +1,9 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Pencil, Trash2, X, Package, MoreVertical, Eye, AlertCircle } from 'lucide-react';
+import { Pencil, Trash2, X, Package, MoreVertical, Eye, AlertCircle, Search } from 'lucide-react';
 // import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ImageCarouselModal } from '@/components/ui';
 import { useProducts } from '@/hooks/admin/useProducts';
@@ -29,6 +29,7 @@ export default function ProductsWithState() {
   const [showImageModal, setShowImageModal] = useState(false);
   const [selectedProductImages, setSelectedProductImages] = useState<string[]>([]);
   const [selectedProductName, setSelectedProductName] = useState<string>('');
+  const [searchTerm, setSearchTerm] = useState('');
 
   // Simple form state for popup dialog
   const [newProduct, setNewProduct] = useState({
@@ -45,6 +46,42 @@ export default function ProductsWithState() {
     loadProducts();
   }, [loadProducts]);
 
+  // Keyboard shortcuts for search
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Clear search with Escape key
+      if (event.key === 'Escape' && searchTerm) {
+        setSearchTerm('');
+      }
+      // Focus search with Ctrl/Cmd + K
+      if ((event.ctrlKey || event.metaKey) && event.key === 'k') {
+        event.preventDefault();
+        const searchInput = document.querySelector('input[aria-label="Search products"]') as HTMLInputElement;
+        if (searchInput) {
+          searchInput.focus();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [searchTerm]);
+
+  // Memoized filtering and counter calculations for performance
+  const { filteredProducts, totalProducts, filteredCount, isSearching } = useMemo(() => {
+    const filtered = products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      product.description.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    
+    return {
+      filteredProducts: filtered,
+      totalProducts: products.length,
+      filteredCount: filtered.length,
+      isSearching: searchTerm.trim().length > 0
+    };
+  }, [products, searchTerm]);
+
   // Handle product creation
   const handleAddProduct = async () => {
     try {
@@ -60,6 +97,7 @@ export default function ProductsWithState() {
         prices: [{ weight: '1 kg', amount: 2000, servings: 20 }], // Default pricing
         whippingCreamOptions: ['Vanilla Cream'], // Default cream option
         bakingTinOptions: ['Round Tin'], // Default tin option
+        defaultCreamIndex: 0,
         isActive: true
       });
       
@@ -139,8 +177,34 @@ export default function ProductsWithState() {
         
       </div>
 
+      {/* Search and Add Product */}
+      <div className="mb-6 flex justify-between items-center">
+        {/* Search Bar */}
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Search className="h-4 w-4 text-gray-400" />
+          </div>
+          <input
+            type="text"
+            placeholder="Search products... (Ctrl+K)"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="block w-64 pl-10 pr-10 py-2 border border-gray-300 rounded-lg text-sm placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-[#c7b8ea] focus:border-transparent"
+            aria-label="Search products"
+            title="Search products by name or description. Press Ctrl+K to focus, Escape to clear."
+          />
+          {searchTerm && (
+            <button
+              onClick={() => setSearchTerm('')}
+              className="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600"
+              aria-label="Clear search"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          )}
+      </div>
+
       {/* Add Product Button */}
-      <div className="mb-6 flex justify-end">
         <button
           onClick={() => setShowAddProductModal(true)}
           className="flex items-center space-x-2 px-4 py-2 bg-[#c7b8ea] text-black rounded-lg hover:bg-[#c7b8ea]/80 transition-colors"
@@ -148,6 +212,35 @@ export default function ProductsWithState() {
           <Package className="w-4 h-4" />
           <span>Add Product</span>
         </button>
+      </div>
+
+      {/* Product Counter */}
+      <div className="mb-4">
+        {loading ? (
+          <p className="text-xs text-gray-500" role="status" aria-live="polite">
+            Loading products...
+          </p>
+        ) : error ? (
+          <p className="text-xs text-red-500" role="alert" aria-live="polite">
+            Error loading products. Please try again.
+          </p>
+        ) : totalProducts === 0 ? (
+          <p className="text-xs text-gray-500" role="status" aria-live="polite">
+            No products available. Add your first product to get started.
+          </p>
+        ) : (
+          <p className="text-xs text-gray-500" aria-live="polite" role="status">
+            {isSearching ? (
+              filteredCount === 0 ? (
+                `No products found matching "${searchTerm}"`
+              ) : (
+                `Showing ${filteredCount} of ${totalProducts} product${totalProducts !== 1 ? 's' : ''}`
+              )
+            ) : (
+              `${totalProducts} product${totalProducts !== 1 ? 's' : ''} total`
+            )}
+          </p>
+        )}
       </div>
 
       {/* Products Table */}
@@ -165,7 +258,14 @@ export default function ProductsWithState() {
               </tr>
             </thead>
             <tbody className="bg-white divide-y divide-gray-200">
-              {products.map(product => (
+              {filteredProducts.length === 0 ? (
+                <tr>
+                  <td colSpan={3} className="px-6 py-8 text-center text-gray-500">
+                    {searchTerm ? 'No products found matching your search.' : 'No products available.'}
+                  </td>
+                </tr>
+              ) : (
+                filteredProducts.map(product => (
                 <tr key={product.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
@@ -247,7 +347,8 @@ export default function ProductsWithState() {
                     </div>
                   </td>
                 </tr>
-              ))}
+                ))
+              )}
             </tbody>
           </table>
         </div>

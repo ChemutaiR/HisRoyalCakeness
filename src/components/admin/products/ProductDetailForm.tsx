@@ -22,8 +22,7 @@ export default function ProductDetailForm({ productId, onSave, onCancel }: Produ
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [showCreamDialog, setShowCreamDialog] = useState(false);
   const [newCreamName, setNewCreamName] = useState('');
-  const [newCreamCost, setNewCreamCost] = useState(0);
-  const [defaultCreamIndex, setDefaultCreamIndex] = useState<number | null>(null);
+  const [newCreamCost, setNewCreamCost] = useState<number | ''>('');
 
   // Load product data
   useEffect(() => {
@@ -97,19 +96,22 @@ export default function ProductDetailForm({ productId, onSave, onCancel }: Produ
 
   const handleSaveCreamOption = () => {
     if (newCreamName.trim()) {
+      const cost = newCreamCost === '' ? 0 : newCreamCost;
+      const creamOption = cost > 0 ? `${newCreamName.trim()} (+${cost})` : newCreamName.trim();
+      
       setFormData(prev => ({
         ...prev,
-        whippingCreamOptions: [...(prev.whippingCreamOptions || []), newCreamName.trim()]
+        whippingCreamOptions: [...(prev.whippingCreamOptions || []), creamOption]
       }));
       setNewCreamName('');
-      setNewCreamCost(0);
+      setNewCreamCost('');
       setShowCreamDialog(false);
     }
   };
 
   const handleCancelCreamOption = () => {
     setNewCreamName('');
-    setNewCreamCost(0);
+    setNewCreamCost('');
     setShowCreamDialog(false);
   };
 
@@ -409,16 +411,10 @@ export default function ProductDetailForm({ productId, onSave, onCancel }: Produ
               const costMatch = option.match(/\+(\d+)/);
               const additionalCost = costMatch ? parseInt(costMatch[1]) : 0;
               const creamName = option.replace(/\s*\(\+\d+\)/, '').trim();
-              const isDefault = defaultCreamIndex === index;
+              const isDefault = formData.defaultCreamIndex === index;
               
               return (
                 <div key={index} className="flex items-center space-x-3 p-3 border border-gray-200 rounded-lg hover:bg-gray-50">
-                  <input
-                    type="radio"
-                    name="creamSelection"
-                    value={index}
-                    className="w-4 h-4 text-[#c7b8ea] focus:ring-[#c7b8ea]"
-                  />
                   <div className="flex-1">
                     <div className="font-medium text-gray-900">{creamName}</div>
                     <div className="text-sm text-gray-500">
@@ -440,8 +436,8 @@ export default function ProductDetailForm({ productId, onSave, onCancel }: Produ
                     <input
                       type="radio"
                       name="defaultCream"
-                      checked={defaultCreamIndex === index}
-                      onChange={() => setDefaultCreamIndex(index)}
+                      checked={formData.defaultCreamIndex === index}
+                      onChange={() => handleInputChange('defaultCreamIndex', index)}
                       className="w-4 h-4 text-[#c7b8ea] focus:ring-[#c7b8ea]"
                     />
                   </div>
@@ -455,9 +451,16 @@ export default function ProductDetailForm({ productId, onSave, onCancel }: Produ
                       className=""
                       placeholder="e.g., Vanilla Cream"
                     />
+                    {formData.defaultCreamIndex === index && (
+                      <div className="mt-1">
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                          Included
+                        </span>
+                      </div>
+                    )}
                   </div>
 
-                  {defaultCreamIndex !== index && (
+                  {formData.defaultCreamIndex !== index && (
                     <div className="w-40">
                       <label className="block text-sm font-medium text-gray-700 mb-1">Additional Cost (KES)</label>
                       <Input
@@ -517,7 +520,7 @@ export default function ProductDetailForm({ productId, onSave, onCancel }: Produ
                 <Input
                   type="number"
                   value={newCreamCost}
-                  onChange={(e) => setNewCreamCost(Number((e.target as HTMLInputElement).value))}
+                  onChange={(e) => setNewCreamCost((e.target as HTMLInputElement).value === '' ? '' : Number((e.target as HTMLInputElement).value))}
                   className=""
                   placeholder="0"
                   min="0"

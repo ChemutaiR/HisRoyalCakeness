@@ -3,6 +3,7 @@
 import { useParams } from 'next/navigation';
 import SizeSelector from '@/components/CakeCustomizer/SizeSelector';
 import CreamSelector from '@/components/CakeCustomizer/CreamSelector';
+import DecorationSelector from '@/components/CakeCustomizer/DecorationSelector';
 import NotesSection from '@/components/CakeCustomizer/NotesSection';
 import ImageUploader from '@/components/CakeCustomizer/ImageUploader';
 import CustomizationSummary from '@/components/CakeCustomizer/CustomizationSummary';
@@ -27,6 +28,7 @@ export default function CakeDetailPage() {
     error,
     selectedSize,
     selectedCream,
+    selectedDecorations,
     // selectedContainerType,
     customNotes,
     uploadedImages,
@@ -34,6 +36,7 @@ export default function CakeDetailPage() {
     availableCreamOptions,
     setSelectedSize,
     setSelectedCream,
+    setSelectedDecorations,
     // setSelectedContainerType,
     setCustomNotes,
     setUploadedImages,
@@ -176,6 +179,11 @@ export default function CakeDetailPage() {
               onSizeChange={setSelectedSize}
             />
 
+              {/* Decoration Selection */}
+              <DecorationSelector
+                selectedDecorations={selectedDecorations}
+                onDecorationsChange={setSelectedDecorations}
+              />
               
             </div>
 
@@ -184,6 +192,7 @@ export default function CakeDetailPage() {
               cake={cake}
               selectedSize={selectedSize}
               selectedCream={selectedCream}
+              selectedDecorations={selectedDecorations}
               totalPrice={totalPrice}
             />
 
@@ -192,6 +201,7 @@ export default function CakeDetailPage() {
               cake={cake}
               selectedSize={selectedSize}
               selectedCream={selectedCream}
+              selectedDecorations={selectedDecorations}
               customNotes={customNotes}
               uploadedImages={uploadedImages}
               totalPrice={totalPrice}

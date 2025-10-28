@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { ArrowLeft } from 'lucide-react';
 import AdminLayout from '@/components/admin/AdminLayout';
 import ProductDetailForm from '@/components/admin/products/ProductDetailForm';
 
@@ -12,6 +14,7 @@ interface ProductDetailPageProps {
 
 export default function ProductDetailPage({ params }: ProductDetailPageProps) {
   const [id, setId] = useState<string>('');
+  const router = useRouter();
 
   useEffect(() => {
     params.then((resolvedParams) => {
@@ -53,6 +56,13 @@ export default function ProductDetailPage({ params }: ProductDetailPageProps) {
       description="Configure product details, pricing, and options"
     >
       <div className="p-6">
+        <button
+          onClick={() => router.push('/admin/products')}
+          className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors mb-6"
+        >
+          <ArrowLeft className="w-4 h-4 mr-2" />
+          Back to Products
+        </button>
         <ProductDetailForm 
           productId={id}
           onSave={handleSave}

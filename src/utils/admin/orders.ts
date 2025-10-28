@@ -103,12 +103,14 @@ export function calculateOrderStats(orders: AdminOrder[]) {
   const averageOrderValue = totalOrders > 0 ? totalRevenue / totalOrders : 0;
   
   const statusCounts = orders.reduce((acc, order) => {
-    acc[order.status] = (acc[order.status] || 0) + 1;
+    const key = order.status as OrderStatus;
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<OrderStatus, number>);
   
   const paymentStatusCounts = orders.reduce((acc, order) => {
-    acc[order.paymentStatus] = (acc[order.paymentStatus] || 0) + 1;
+    const key = order.paymentStatus as PaymentStatus;
+    acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<PaymentStatus, number>);
   
@@ -134,7 +136,7 @@ export function getOrderTimeline(order: AdminOrder) {
     }
   ];
   
-  if (order.status !== 'pending') {
+  if (order.status !== 'pending' as OrderStatus) {
     timeline.push({
       status: 'confirmed',
       label: 'Order Confirmed',

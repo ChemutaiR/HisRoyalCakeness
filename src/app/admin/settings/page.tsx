@@ -1,15 +1,15 @@
 "use client";
 
-import AdminLayout from '@/components/admin/AdminLayout';
-import Settings from '@/components/admin/settings/Settings';
+import { useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 
 export default function SettingsPage() {
-  return (
-    <AdminLayout 
-      title="Settings" 
-      description="Configure business and application settings"
-    >
-      <Settings />
-    </AdminLayout>
-  );
+  const router = useRouter();
+
+  useEffect(() => {
+    // Redirect to business settings as the main settings page
+    router.replace('/admin/settings/business');
+  }, [router]);
+
+  return null;
 }

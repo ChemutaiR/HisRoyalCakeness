@@ -1,47 +1,69 @@
 'use client';
 
-// State management imports removed - will be replaced with Redux
 import { Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import { CartItem, CustomLoafItem } from '@/types/shop/cart';
+import { useCart } from '@/hooks/shop/useCart';
+// import { CartItem, CustomLoafItem } from '@/types/shop/cart';
 
 export default function CartPage() {
-  // TODO: Replace with Redux state management
-  const items: CartItem[] = []; // Temporary placeholder
-  const customLoafItems: CustomLoafItem[] = []; // Temporary placeholder
-  const totalItems = 0; // Temporary placeholder
-  const totalPrice = 0; // Temporary placeholder
-  const updateQuantity = (itemId: string, quantity: number) => {}; // Temporary placeholder
-  const removeItem = (itemId: string) => {}; // Temporary placeholder
-  const clearCart = () => {}; // Temporary placeholder
-  const addNotification = (notification: { type: string; title: string; message: string; duration?: number }) => {}; // Temporary placeholder
+  // Use real cart hook for cart functionality
+  const {
+    items,
+    customLoafItems,
+    totalItems,
+    totalPrice: _totalPrice,
+    subtotal,
+    deliveryFee: _deliveryFee,
+    total,
+    isLoading,
+    error,
+    updateQuantity,
+    removeItem,
+    clearCart
+  } = useCart();
 
-  const handleUpdateQuantity = (itemId: string, quantity: number) => {
-    updateQuantity(itemId, quantity);
+  const handleUpdateQuantity = async (itemId: string, quantity: number) => {
+    await updateQuantity(itemId, quantity);
   };
 
-  const handleRemoveItem = (itemId: string) => {
-    removeItem(itemId);
-    addNotification({
-      type: 'info',
-      title: 'Removed from Cart',
-      message: 'Item has been removed from your cart',
-      duration: 2000
-    });
+  const handleRemoveItem = async (itemId: string) => {
+    await removeItem(itemId);
   };
 
-  const handleClearCart = () => {
-    clearCart();
-    addNotification({
-      type: 'info',
-      title: 'Cart Cleared',
-      message: 'All items have been removed from your cart',
-      duration: 2000
-    });
+  const handleClearCart = async () => {
+    await clearCart();
   };
 
   
+
+  if (isLoading) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c7b8ea] mx-auto mb-4"></div>
+          <p className="text-sm text-gray-500 leading-relaxed">Loading cart...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="flex-1 flex items-center justify-center py-8">
+        <div className="text-center">
+          <h1 className="text-2xl font-medium text-gray-800 tracking-wide mb-4">Error Loading Cart</h1>
+          <p className="text-sm text-gray-500 leading-relaxed mb-6">{error}</p>
+          <button 
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center px-4 py-2 bg-[#c7b8ea] text-black rounded-lg hover:bg-[#c7b8ea]/80 transition-colors"
+          >
+            Try Again
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   if (totalItems === 0) {
     return (
@@ -51,7 +73,7 @@ export default function CartPage() {
           <h1 className="text-2xl font-medium text-gray-800 tracking-wide mb-0.5 text-left w-full">Your Cart is Empty</h1>
           <p className="mb-8 text-sm text-gray-500 leading-relaxed w-full">Add some delicious cakes to get started!</p>
           <Link 
-            href="/catalog"
+            href="/shop/catalog"
             className="w-full bg-[#c7b8ea] text-black text-sm font-semibold py-2 rounded-full hover:bg-[#c7b8ea]/80 transition-colors shadow text-center"
           >
             Browse Cakes
@@ -98,11 +120,33 @@ export default function CartPage() {
                     <p className="text-xs text-gray-500 leading-relaxed">
                       Cream: {item.customization.selectedCream?.name}
                     </p>
+                           {item.customization.selectedDecorations && item.customization.selectedDecorations.length > 0 && (
+                             <p className="text-xs text-gray-500 leading-relaxed">
+                               Decorations: {item.customization.selectedDecorations.map(d => d.name).join(', ')}
+                             </p>
+                           )}
                     {item.customization.customNotes && (
                       <p className="text-xs text-gray-500 leading-relaxed">
                         Notes: {item.customization.customNotes}
                       </p>
                     )}
+                           {item.customization.uploadedImages && item.customization.uploadedImages.length > 0 && (
+                             <div className="mt-3">
+                               <p className="text-xs font-medium text-gray-700 mb-2">Design References:</p>
+                               <div className="grid grid-cols-3 gap-2">
+                                 {item.customization.uploadedImages.map((image, index) => (
+                                   <div key={index} className="relative">
+                                     {/* eslint-disable-next-line @next/next/no-img-element */}
+                                     <img
+                                       src={image}
+                                       alt={`Design reference ${index + 1}`}
+                                       className="w-full h-16 object-cover rounded-md border border-gray-200"
+                                     />
+                                   </div>
+                                 ))}
+                               </div>
+                             </div>
+                           )}
                     <div className="flex items-center justify-between mt-4">
                       <div className="flex items-center space-x-2">
                         <button
@@ -202,22 +246,21 @@ export default function CartPage() {
               <div className="space-y-2 mb-4">
                 <div className="flex justify-between">
                   <span className="text-sm text-gray-500 leading-relaxed">Subtotal ({totalItems} items)</span>
-                  <span className="text-sm font-semibold text-gray-900 tracking-tight">KSH {totalPrice.toLocaleString()}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-sm text-gray-500 leading-relaxed">Delivery</span>
-                  <span className="text-sm font-semibold text-gray-900 tracking-tight">KSH 500</span>
+                  <span className="text-sm font-semibold text-gray-900 tracking-tight">KSH {subtotal.toLocaleString()}</span>
                 </div>
                 <div className="border-t pt-2">
                   <div className="flex justify-between font-semibold text-lg tracking-tight text-gray-900">
                     <span>Total</span>
-                    <span>KSH {(totalPrice + 500).toLocaleString()}</span>
+                    <span>KSH {total.toLocaleString()}</span>
                   </div>
                 </div>
               </div>
-              <button className="w-full bg-[#c7b8ea] text-black text-sm font-semibold py-3 rounded-full hover:bg-[#c7b8ea]/80 transition-colors shadow">
+              <Link 
+                href="/shop/checkout"
+                className="w-full bg-[#c7b8ea] text-black text-sm font-semibold py-3 rounded-full hover:bg-[#c7b8ea]/80 transition-colors shadow text-center block"
+              >
                 Proceed to Checkout
-              </button>
+              </Link>
             </div>
           </div>
         </div>

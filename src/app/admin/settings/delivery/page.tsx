@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import AdminLayout from '@/components/admin/AdminLayout';
-import { Save, Truck, MapPin, Clock, Plus, Trash2 } from 'lucide-react';
+import { Save, Truck, MapPin, Plus, Trash2 } from 'lucide-react';
 
 export default function DeliverySettingsPage() {
   const [deliveryZones, setDeliveryZones] = useState([
@@ -14,12 +14,6 @@ export default function DeliverySettingsPage() {
   const [newZone, setNewZone] = useState({ name: '', fee: '', estimatedTime: '' });
   const [showAddZone, setShowAddZone] = useState(false);
 
-  const [deliverySettings, setDeliverySettings] = useState({
-    freeDeliveryThreshold: 5000,
-    maxDeliveryDistance: 50,
-    deliveryTimeSlot: '2-hour',
-    allowScheduledDelivery: true
-  });
 
   const [hasChanges, setHasChanges] = useState(false);
 
@@ -51,13 +45,9 @@ export default function DeliverySettingsPage() {
     setHasChanges(true);
   };
 
-  const handleDeliverySettingsChange = (field: string, value: string | number | boolean) => {
-    setDeliverySettings(prev => ({ ...prev, [field]: value }));
-    setHasChanges(true);
-  };
 
   const handleSave = () => {
-    // console.log('Saving delivery settings:', { deliveryZones, deliverySettings });
+    // console.log('Saving delivery settings:', { deliveryZones });
     setHasChanges(false);
   };
 
@@ -70,8 +60,8 @@ export default function DeliverySettingsPage() {
         {/* Header */}
         <div className="flex justify-between items-center mb-6">
           <div>
-            <h2 className="text-2xl font-bold mb-2">Delivery Settings</h2>
-            <p className="text-gray-600">Manage delivery zones, fees, and logistics for your bakery.</p>
+            <h2 className="text-2xl font-medium text-gray-800 tracking-wide mb-0.5">Delivery Settings</h2>
+            <p className="text-sm text-gray-500 leading-relaxed">Manage delivery zones, fees, and logistics for your bakery.</p>
           </div>
           {hasChanges && (
             <button
@@ -89,7 +79,7 @@ export default function DeliverySettingsPage() {
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
               <MapPin className="w-5 h-5 text-[#c7b8ea]" />
-              <h3 className="text-lg font-semibold text-gray-800">Delivery Zones</h3>
+              <h3 className="text-sm font-medium text-gray-800 tracking-wide">Delivery Zones</h3>
             </div>
             <button
               onClick={() => setShowAddZone(true)}
@@ -189,62 +179,6 @@ export default function DeliverySettingsPage() {
           </div>
         </div>
 
-        {/* Delivery Configuration */}
-        <div className="bg-white rounded-lg shadow-sm p-6">
-          <div className="flex items-center gap-2 mb-4">
-            <Clock className="w-5 h-5 text-[#c7b8ea]" />
-            <h3 className="text-lg font-semibold text-gray-800">Delivery Configuration</h3>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Free Delivery Threshold (KES)</label>
-              <input
-                type="number"
-                value={deliverySettings.freeDeliveryThreshold}
-                onChange={(e) => handleDeliverySettingsChange('freeDeliveryThreshold', parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]"
-                min="0"
-              />
-              <p className="text-xs text-gray-500 mt-1">Orders above this amount get free delivery</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Max Delivery Distance (km)</label>
-              <input
-                type="number"
-                value={deliverySettings.maxDeliveryDistance}
-                onChange={(e) => handleDeliverySettingsChange('maxDeliveryDistance', parseInt(e.target.value))}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]"
-                min="1"
-              />
-              <p className="text-xs text-gray-500 mt-1">Maximum distance for delivery</p>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Delivery Time Slot</label>
-              <select
-                value={deliverySettings.deliveryTimeSlot}
-                onChange={(e) => handleDeliverySettingsChange('deliveryTimeSlot', e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]"
-              >
-                <option value="1-hour">1 Hour</option>
-                <option value="2-hour">2 Hours</option>
-                <option value="4-hour">4 Hours</option>
-                <option value="same-day">Same Day</option>
-              </select>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">Scheduled Delivery</label>
-              <label className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  checked={deliverySettings.allowScheduledDelivery}
-                  onChange={(e) => handleDeliverySettingsChange('allowScheduledDelivery', e.target.checked)}
-                  className="rounded border-gray-300 text-[#c7b8ea] focus:ring-[#c7b8ea]"
-                />
-                <span className="text-sm text-gray-600">Allow customers to schedule delivery</span>
-              </label>
-            </div>
-          </div>
-        </div>
       </div>
     </AdminLayout>
   );
