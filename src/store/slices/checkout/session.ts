@@ -25,7 +25,8 @@ const initialFormData: CheckoutFormData = {
   deliveryAddress: {
     street: '',
     directions: '',
-    country: 'Kenya'
+    country: 'Kenya',
+    phone: ''
   },
   deliveryDate: '',
   deliveryTime: '',

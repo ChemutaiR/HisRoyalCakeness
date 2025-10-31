@@ -1,6 +1,6 @@
 'use client';
 
-import { Search, User, ShoppingCart } from 'lucide-react';
+import { Bell, User, ShoppingCart } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { useState, useRef, useEffect } from 'react';
@@ -57,8 +57,8 @@ const Navbar = () => {
 
           {/* Navigation Icons */}
           <div className="flex items-center space-x-4">
-            <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
-              <Search className="h-6 w-6 text-white" />
+            <button className="p-2 rounded-full hover:bg-white/10 transition-colors" aria-label="Notifications">
+              <Bell className="h-6 w-6 text-white" />
             </button>
             <div className="relative">
               <button
@@ -75,6 +75,13 @@ const Navbar = () => {
                   ref={dropdownRef}
                   className="absolute right-0 mt-2 w-40 bg-white text-black rounded shadow-lg z-50 py-2 flex flex-col font-work-sans"
                 >
+                  <Link
+                    href="/profile"
+                    className="px-4 py-2 text-left rounded hover:bg-[#c7b8ea] hover:text-black transition-colors block"
+                    onClick={() => setDropdownOpen(false)}
+                  >
+                    Profile
+                  </Link>
                   <Link
                     href="/admin"
                     className="px-4 py-2 text-left rounded hover:bg-[#c7b8ea] hover:text-black transition-colors block"

@@ -11,9 +11,10 @@ interface CheckoutSummaryProps {
   deliveryFee: number | null;
   total: number;
   selectedZone?: DeliveryZone | null;
+  discountAmount?: number;
 }
 
-export function CheckoutSummary({ subtotal, deliveryFee, total, selectedZone }: CheckoutSummaryProps) {
+export function CheckoutSummary({ subtotal, deliveryFee, total, selectedZone, discountAmount = 0 }: CheckoutSummaryProps) {
   const { formData, step } = useCheckout();
   const { items, customLoafItems } = useCartStore();
 
@@ -179,6 +180,12 @@ export function CheckoutSummary({ subtotal, deliveryFee, total, selectedZone }: 
               <span className="text-gray-900">KES {(subtotal || 0).toLocaleString()}</span>
             </div>
             
+            {discountAmount > 0 && (
+              <div className="flex justify-between text-sm">
+                <span className="text-green-600">Promotion Discount</span>
+                <span className="text-green-600 font-semibold">-KES {discountAmount.toLocaleString()}</span>
+              </div>
+            )}
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">
                 Delivery Fee {selectedZone && `(${selectedZone.name})`}

@@ -9,11 +9,13 @@ import { areCustomizationsEqual } from '@/utils/cart/comparison';
 export interface CartStore extends CartState, CartActions {
   // Additional state
   lastUpdated: Date | null;
+  activePromotionId: string | null;
   
   // Additional actions
   persistCart: () => void;
   loadCart: () => void;
   addNotification: (notification: { type: string; title: string; message: string; duration?: number }) => void;
+  setActivePromotion: (promoId: string | null) => void;
 }
 
 export const useCartStore = create<CartStore>()(
@@ -30,6 +32,7 @@ export const useCartStore = create<CartStore>()(
           isLoading: false,
           error: null,
           lastUpdated: null,
+          activePromotionId: null,
 
           // Actions
           addItem: (cake: Cake, customization: CustomizationOptions, quantity: number = 1) => {
@@ -135,7 +138,8 @@ export const useCartStore = create<CartStore>()(
               customLoafItems: [],
               totalItems: 0,
               totalPrice: 0,
-              lastUpdated: new Date()
+              lastUpdated: new Date(),
+              activePromotionId: null
             });
 
             get().addNotification({
@@ -212,6 +216,10 @@ export const useCartStore = create<CartStore>()(
           addNotification: (notification) => {
             // Placeholder for notification system
             // console.log('Notification:', notification);
+          },
+          
+          setActivePromotion: (promoId: string | null) => {
+            set({ activePromotionId: promoId });
           }
         }),
         {

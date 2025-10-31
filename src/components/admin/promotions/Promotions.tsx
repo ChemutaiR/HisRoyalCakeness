@@ -1,17 +1,52 @@
 "use client";
 
-import { useState } from 'react';
-import { Pencil, Trash2, Plus } from 'lucide-react';
+import { useEffect, useMemo, useState, useRef } from 'react';
+import { Plus } from 'lucide-react';
+import { useCatalogStore } from '@/store/slices/shop/catalog';
+import PromotionsTable from './PromotionsTable';
+import AddPromotionModal from './AddPromotionModal';
+import EditPromotionModal from './EditPromotionModal';
+import { usePromotions } from '@/hooks/admin/promotions/usePromotions';
 
 export default function Promotions() {
   const [editingPromotion, setEditingPromotion] = useState<any>(null);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [applyToAllAdd, setApplyToAllAdd] = useState<boolean>(true);
+  const [selectedCakesAdd, setSelectedCakesAdd] = useState<string[]>([]);
 
-  const promotions = [
+  const [applyToAllEdit, setApplyToAllEdit] = useState<boolean>(false);
+  const [selectedCakesEdit, setSelectedCakesEdit] = useState<string[]>([]);
+  const [discountTypeEdit, setDiscountTypeEdit] = useState<'Percentage' | 'Fixed Amount'>('Percentage');
+  const [discountTypeAdd, setDiscountTypeAdd] = useState<'Percentage' | 'Fixed Amount'>('Percentage');
+  const [statusEdit, setStatusEdit] = useState<string>('Active');
+  const [enableMinOrderEdit, setEnableMinOrderEdit] = useState<boolean>(true);
+  const [enableMaxUsageEdit, setEnableMaxUsageEdit] = useState<boolean>(true);
+  const [enableMinOrderAdd, setEnableMinOrderAdd] = useState<boolean>(false);
+  const [enableMaxUsageAdd, setEnableMaxUsageAdd] = useState<boolean>(false);
+  const [enableImageAdd, setEnableImageAdd] = useState<boolean>(false);
+  const [enableImageEdit, setEnableImageEdit] = useState<boolean>(false);
+  const [_imageFileAdd, setImageFileAdd] = useState<File | null>(null);
+  const [imagePreviewAdd, setImagePreviewAdd] = useState<string | null>(null);
+  const [_imageFileEdit, setImageFileEdit] = useState<File | null>(null);
+  const [imagePreviewEdit, setImagePreviewEdit] = useState<string | null>(null);
+  const imageFileInputRefAdd = useRef<HTMLInputElement | null>(null);
+  const imageFileInputRefEdit = useRef<HTMLInputElement | null>(null);
+
+  const { cakes, loadCakes } = useCatalogStore();
+  useEffect(() => {
+    loadCakes();
+  }, [loadCakes]);
+
+  const cakeNames = useMemo(() => cakes.map(c => c.name), [cakes]);
+
+  const { promotions: fetchedPromotions } = usePromotions();
+
+  const promotions = useMemo(() => [
     {
       id: '#PROMO001',
       name: 'Birthday Special',
       description: 'Get 15% off on birthday cakes',
+      image: '/promotions/weekend.jpg',
       discountType: 'Percentage',
       discountValue: 15,
       startDate: '2024-01-01',
@@ -27,6 +62,7 @@ export default function Promotions() {
       id: '#PROMO002',
       name: 'First Order Discount',
       description: '20% off for first-time customers',
+      image: '/promotions/seasonal.jpg',
       discountType: 'Percentage',
       discountValue: 20,
       startDate: '2024-01-01',
@@ -42,6 +78,7 @@ export default function Promotions() {
       id: '#PROMO003',
       name: 'Weekend Special',
       description: '10% off on all orders placed on weekends',
+      image: '/promotions/cupcakes.jpg',
       discountType: 'Percentage',
       discountValue: 10,
       startDate: '2024-01-01',
@@ -57,6 +94,7 @@ export default function Promotions() {
       id: '#PROMO004',
       name: 'Chocolate Lovers',
       description: 'Flat KES 500 off on chocolate cakes',
+      image: '/promotions/chocolate.jpg',
       discountType: 'Fixed Amount',
       discountValue: 500,
       startDate: '2024-02-01',
@@ -102,6 +140,7 @@ export default function Promotions() {
       id: '#PROMO007',
       name: 'Referral Bonus',
       description: 'KES 1000 off when referred by existing customer',
+      image: '/promotions/referral.jpg',
       discountType: 'Fixed Amount',
       discountValue: 1000,
       startDate: '2024-01-01',
@@ -117,6 +156,7 @@ export default function Promotions() {
       id: '#PROMO008',
       name: 'Holiday Special',
       description: '30% off on fruit cakes during holidays',
+      image: '/promotions/holiday.jpg',
       discountType: 'Percentage',
       discountValue: 30,
       startDate: '2024-12-01',
@@ -128,7 +168,11 @@ export default function Promotions() {
       minOrderValue: 3500,
       code: 'HOLIDAY30'
     }
-  ];
+  ], []);
+
+  const effectivePromotions = useMemo(() => {
+    return fetchedPromotions && fetchedPromotions.length > 0 ? fetchedPromotions : promotions;
+  }, [fetchedPromotions, promotions]);
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -151,6 +195,22 @@ export default function Promotions() {
 
   const handleEdit = (promotion: any) => {
     setEditingPromotion(promotion);
+    const isAll = promotion.applicableProducts?.includes('All Cakes');
+    setApplyToAllEdit(!!isAll);
+    setSelectedCakesEdit(isAll ? [] : (promotion.applicableProducts || []));
+    setDiscountTypeEdit(promotion.discountType || 'Percentage');
+    setEnableMinOrderEdit(typeof promotion.minOrderValue === 'number');
+    setEnableMaxUsageEdit(typeof promotion.maxUsage === 'number');
+    setStatusEdit(promotion.status || 'Active');
+    const hasImage = !!promotion.image;
+    setEnableImageEdit(hasImage);
+    if (hasImage) {
+      setImagePreviewEdit(promotion.image);
+      setImageFileEdit(null);
+    } else {
+      setImagePreviewEdit(null);
+      setImageFileEdit(null);
+    }
   };
 
   const handleDelete = () => {
@@ -160,6 +220,8 @@ export default function Promotions() {
 
   const handleAddPromotion = () => {
     setShowAddModal(true);
+    setApplyToAllAdd(true);
+    setSelectedCakesAdd([]);
   };
 
   return (
@@ -176,343 +238,76 @@ export default function Promotions() {
       </div>
       <p className="text-gray-600 text-base mb-8">Manage promotional campaigns and discount codes.</p>
       
-      {/* Promotions Management Table */}
-      <div className="bg-white rounded-lg shadow-lg overflow-hidden">
-        <div className="bg-gray-50 px-6 py-4 border-b">
-          <h3 className="text-lg font-semibold text-gray-800">Active Promotions</h3>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Promotion</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Discount</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Valid Period</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Usage</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Code</th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {promotions.map(promotion => (
-                <tr key={promotion.id} className="hover:bg-gray-50">
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div>
-                      <div className="text-sm font-medium text-gray-900">{promotion.name}</div>
-                      <div className="text-sm text-gray-500">{promotion.description}</div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">
-                      {promotion.discountType === 'Percentage' ? `${promotion.discountValue}%` : `KES ${promotion.discountValue.toLocaleString()}`}
-                    </div>
-                    <div className="text-sm text-gray-500">Min: KES {promotion.minOrderValue.toLocaleString()}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm text-gray-900">{promotion.startDate}</div>
-                    <div className="text-sm text-gray-500">to {promotion.endDate}</div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-medium text-gray-900">{promotion.usageCount}/{promotion.maxUsage}</div>
-                    <div className="w-full bg-gray-200 rounded-full h-2 mt-1">
-                      <div 
-                        className="bg-blue-600 h-2 rounded-full" 
-                        style={{ width: `${getUsagePercentage(promotion.usageCount, promotion.maxUsage)}%` }}
-                      ></div>
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <span className={`px-2 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(promotion.status)}`}>
-                      {promotion.status}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap">
-                    <div className="text-sm font-mono bg-gray-100 px-2 py-1 rounded text-gray-900">
-                      {promotion.code}
-                    </div>
-                  </td>
-                  <td className="px-6 py-4 whitespace-nowrap text-sm font-medium space-x-2">
-                    <button 
-                      onClick={() => handleEdit(promotion)}
-                      className="text-indigo-600 hover:text-indigo-900" 
-                      title="Edit"
-                    >
-                      <Pencil className="w-4 h-4" />
-                    </button>
-                    <button 
-                      onClick={handleDelete}
-                      className="text-red-600 hover:text-red-900" 
-                      title="Delete"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
+      <PromotionsTable 
+        promotions={effectivePromotions}
+        onEdit={handleEdit}
+        onDelete={handleDelete}
+        getStatusColor={getStatusColor}
+        getUsagePercentage={getUsagePercentage}
+      />
 
-      {/* Edit Promotion Modal */}
-      {editingPromotion && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Edit Promotion</h3>
-              <button 
-                onClick={() => setEditingPromotion(null)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Trash2 size={24} />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Promotion Name</label>
-                <input 
-                  type="text" 
-                  defaultValue={editingPromotion.name}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea 
-                  defaultValue={editingPromotion.description}
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount Type</label>
-                  <select 
-                    defaultValue={editingPromotion.discountType}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="Percentage">Percentage</option>
-                    <option value="Fixed Amount">Fixed Amount</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount Value</label>
-                  <input 
-                    type="number" 
-                    defaultValue={editingPromotion.discountValue}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                  <input 
-                    type="date" 
-                    defaultValue={editingPromotion.startDate}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                  <input 
-                    type="date" 
-                    defaultValue={editingPromotion.endDate}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Order Value</label>
-                  <input 
-                    type="number" 
-                    defaultValue={editingPromotion.minOrderValue}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Usage</label>
-                  <input 
-                    type="number" 
-                    defaultValue={editingPromotion.maxUsage}
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Promotion Code</label>
-                <input 
-                  type="text" 
-                  defaultValue={editingPromotion.code}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select 
-                  defaultValue={editingPromotion.status}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Paused">Paused</option>
-                  <option value="Scheduled">Scheduled</option>
-                  <option value="Expired">Expired</option>
-                </select>
-              </div>
-              
-              <div className="flex justify-end space-x-3 pt-4">
-                <button 
-                  onClick={() => setEditingPromotion(null)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <EditPromotionModal
+        isOpen={!!editingPromotion}
+        onClose={() => {
+          setEditingPromotion(null);
+          setEnableImageEdit(false);
+          setImageFileEdit(null);
+          setImagePreviewEdit(null);
+          if (imageFileInputRefEdit.current) {
+            imageFileInputRefEdit.current.value = '';
+          }
+        }}
+        promotion={editingPromotion}
+        cakeNames={cakeNames}
+        enableImage={enableImageEdit}
+        setEnableImage={setEnableImageEdit}
+        imageFileRef={imageFileInputRefEdit}
+        imagePreview={imagePreviewEdit}
+        setImagePreview={setImagePreviewEdit}
+        setImageFile={setImageFileEdit}
+        applyToAll={applyToAllEdit}
+        setApplyToAll={setApplyToAllEdit}
+        selectedCakes={selectedCakesEdit}
+        setSelectedCakes={setSelectedCakesEdit}
+        discountType={discountTypeEdit}
+        setDiscountType={setDiscountTypeEdit}
+        enableMinOrder={enableMinOrderEdit}
+        setEnableMinOrder={setEnableMinOrderEdit}
+        enableMaxUsage={enableMaxUsageEdit}
+        setEnableMaxUsage={setEnableMaxUsageEdit}
+        status={statusEdit}
+        setStatus={setStatusEdit}
+      />
 
-      {/* Add Promotion Modal */}
-      {showAddModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg p-6 max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-xl font-bold">Add New Promotion</h3>
-              <button 
-                onClick={() => setShowAddModal(false)}
-                className="text-gray-500 hover:text-gray-700"
-              >
-                <Trash2 size={24} />
-              </button>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Promotion Name</label>
-                <input 
-                  type="text" 
-                  placeholder="Enter promotion name"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Description</label>
-                <textarea 
-                  placeholder="Enter promotion description"
-                  rows={3}
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount Type</label>
-                  <select 
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  >
-                    <option value="Percentage">Percentage</option>
-                    <option value="Fixed Amount">Fixed Amount</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Discount Value</label>
-                  <input 
-                    type="number" 
-                    placeholder="0"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
-                  <input 
-                    type="date" 
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
-                  <input 
-                    type="date" 
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Minimum Order Value</label>
-                  <input 
-                    type="number" 
-                    placeholder="0"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">Max Usage</label>
-                  <input 
-                    type="number" 
-                    placeholder="0"
-                    className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                </div>
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Promotion Code</label>
-                <input 
-                  type="text" 
-                  placeholder="Enter promotion code"
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 font-mono"
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
-                <select 
-                  className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                >
-                  <option value="Active">Active</option>
-                  <option value="Paused">Paused</option>
-                  <option value="Scheduled">Scheduled</option>
-                </select>
-              </div>
-              
-              <div className="flex justify-end space-x-3 pt-4">
-                <button 
-                  onClick={() => setShowAddModal(false)}
-                  className="px-4 py-2 border border-gray-300 rounded-md text-gray-700 hover:bg-gray-50"
-                >
-                  Cancel
-                </button>
-                <button 
-                  className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700"
-                >
-                  Add Promotion
-                </button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <AddPromotionModal
+        isOpen={showAddModal}
+        onClose={() => {
+          setShowAddModal(false);
+          setEnableImageAdd(false);
+          setImageFileAdd(null);
+          setImagePreviewAdd(null);
+          if (imageFileInputRefAdd.current) {
+            imageFileInputRefAdd.current.value = '';
+          }
+        }}
+        cakeNames={cakeNames}
+        enableImage={enableImageAdd}
+        setEnableImage={setEnableImageAdd}
+        imageFileRef={imageFileInputRefAdd}
+        imagePreview={imagePreviewAdd}
+        setImagePreview={setImagePreviewAdd}
+        setImageFile={setImageFileAdd}
+        applyToAll={applyToAllAdd}
+        setApplyToAll={setApplyToAllAdd}
+        selectedCakes={selectedCakesAdd}
+        setSelectedCakes={setSelectedCakesAdd}
+        discountType={discountTypeAdd}
+        setDiscountType={setDiscountTypeAdd}
+        enableMinOrder={enableMinOrderAdd}
+        setEnableMinOrder={setEnableMinOrderAdd}
+        enableMaxUsage={enableMaxUsageAdd}
+        setEnableMaxUsage={setEnableMaxUsageAdd}
+      />
     </div>
   );
 } 

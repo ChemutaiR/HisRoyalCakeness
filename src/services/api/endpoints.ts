@@ -53,6 +53,7 @@ export const API_ENDPOINTS = {
     LOGOUT: '/auth/logout',
     REFRESH: '/auth/refresh',
     PROFILE: '/auth/profile',
+    FORGOT_PASSWORD: '/auth/forgot-password',
   },
 
   // Checkout
@@ -69,6 +70,17 @@ export const API_ENDPOINTS = {
     ORDERS: '/analytics/orders',
     PRODUCTS: '/analytics/products',
     REVENUE: '/analytics/revenue',
+    EXPORT: '/analytics/dashboard/export',
+  },
+
+  // Profile
+  PROFILE: {
+    BASE: '/profile',
+    UPDATE: '/profile',
+    AVATAR: '/profile/avatar',
+    PASSWORD: '/profile/password',
+    SETTINGS: '/profile/settings',
+    ORDERS: '/profile/orders',
   },
 
   // Settings
@@ -76,6 +88,16 @@ export const API_ENDPOINTS = {
     BUSINESS: '/settings/business',
     NOTIFICATIONS: '/settings/notifications',
     INTEGRATIONS: '/settings/integrations',
+  },
+
+  // Promotions
+  PROMOTIONS: {
+    BASE: '/promotions',
+    BY_ID: (id: string) => `/promotions/${id}`,
+    ACTIVATE: (id: string) => `/promotions/${id}/activate`,
+    DEACTIVATE: (id: string) => `/promotions/${id}/deactivate`,
+    DUPLICATE: (id: string) => `/promotions/${id}/duplicate`,
+    DETAIL: '/promotions/:id',
   },
 } as const;
 

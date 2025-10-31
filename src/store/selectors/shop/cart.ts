@@ -1,6 +1,7 @@
 import { useCartStore } from '@/store/slices/shop/cart';
 // import { CartItem, CustomLoafItem } from '@/types/shop/cart';
 import { calculateCartSubtotal, getCartSummary } from '@/utils/cart/calculations';
+import { getPromotionDetail, calculatePromotionDiscountForCart } from '@/utils/promotions';
 
 // Basic selectors
 export const selectCartItems = (state: ReturnType<typeof useCartStore.getState>) => state.items;
@@ -14,8 +15,34 @@ export const selectLastUpdated = (state: ReturnType<typeof useCartStore.getState
 
 // Computed selectors
 export const selectCartSummary = (state: ReturnType<typeof useCartStore.getState>) => {
-  const { items, customLoafItems } = state;
-  return getCartSummary(items, customLoafItems, 200, 0, 0); // 200 delivery fee, 0 tax, 0 discount
+  const { items, customLoafItems, activePromotionId } = state;
+  const _subtotal = calculateCartSubtotal(items, customLoafItems);
+  
+  // Calculate discount for eligible items
+  let discountAmount = 0;
+  if (activePromotionId) {
+    const promotion = getPromotionDetail(activePromotionId);
+    if (promotion) {
+      // Check if promotion applies to all cakes
+      const appliesToAll = promotion.applicableProductNames.some(name => 
+        name.toLowerCase() === 'all cakes' || name.toLowerCase() === 'all'
+      );
+      
+      // Calculate subtotal for eligible items only
+      const eligibleItemsSubtotal = appliesToAll
+        ? _subtotal // All items eligible
+        : items
+            .filter(item => promotion.applicableProductNames.some(name => 
+              item.cake.name.toLowerCase().includes(name.toLowerCase())
+            ))
+            .reduce((sum, item) => sum + item.totalPrice * item.quantity, 0);
+      
+      const discountResult = calculatePromotionDiscountForCart(activePromotionId, eligibleItemsSubtotal);
+      discountAmount = discountResult.discountAmount;
+    }
+  }
+  
+  return getCartSummary(items, customLoafItems, 200, 0, discountAmount);
 };
 
 export const selectCartItemCount = (state: ReturnType<typeof useCartStore.getState>) => {

@@ -40,6 +40,7 @@ export interface CheckoutFormData {
     street: string;
     directions?: string;
     country: string;
+    phone?: string;
   };
   deliveryDate: string;
   deliveryTime: string;

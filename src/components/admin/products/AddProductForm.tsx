@@ -1,174 +1,176 @@
 "use client";
 
-import { useState } from 'react';
-import { X, Plus, Trash2, ArrowLeft, ArrowRight, Check } from 'lucide-react';
+import { X, Plus, Trash2 } from 'lucide-react';
 import { useProducts } from '@/hooks/admin/useProducts';
 import { type AdminProduct } from '@/store/slices/admin/products';
+import ProductFormStepper from './ProductFormStepper';
+import ProductFormModalHeader from './ProductFormModalHeader';
+import ProductFormModalFooter from './ProductFormModalFooter';
+import ProductBakingTinOptions from './ProductBakingTinOptions';
+import ProductSummary from './ProductSummary';
+import { useProductSteps } from '@/hooks/admin/products/useProductSteps';
+import { useProductForm } from '@/hooks/admin/products/useProductForm';
+import { useProductImages } from '@/hooks/admin/products/useProductImages';
+import { useProductPricing } from '@/hooks/admin/products/useProductPricing';
+import { useProductCreamOptions } from '@/hooks/admin/products/useProductCreamOptions';
 
 interface AddProductFormProps {
   onClose: () => void;
   onSuccess?: () => void;
 }
 
-interface FormData {
-  name: string;
-  description: string;
-  images: string[];
-  prices: Array<{ weight: string; amount: number; servings: number }>;
-  whippingCreamOptions: string[];
-  bakingTinOptions: string[];
-  isActive: boolean;
-}
-
-const initialFormData: FormData = {
-  name: '',
-  description: '',
-  images: [],
-  prices: [],
-  whippingCreamOptions: [],
-  bakingTinOptions: [],
-  isActive: true
-};
+const steps = [
+  { id: 1, title: 'Basic Info', description: 'Product name and description' },
+  { id: 2, title: 'Images', description: 'Product images' },
+  { id: 3, title: 'Pricing', description: 'Price points and servings' },
+  { id: 4, title: 'Options', description: 'Whipping cream and baking tin options' },
+  { id: 5, title: 'Status', description: 'Activate product' }
+];
 
 export default function AddProductForm({ onClose, onSuccess }: AddProductFormProps) {
   const { createProduct, loading } = useProducts();
-  const [currentStep, setCurrentStep] = useState(1);
-  const [formData, setFormData] = useState<FormData>(initialFormData);
-  const [errors, setErrors] = useState<Record<string, string>>({});
 
-  const steps = [
-    { id: 1, title: 'Basic Info', description: 'Product name and description' },
-    { id: 2, title: 'Images', description: 'Product images' },
-    { id: 3, title: 'Pricing', description: 'Price points and servings' },
-    { id: 4, title: 'Options', description: 'Whipping cream and baking tin options' },
-    { id: 5, title: 'Status', description: 'Activate product' }
-  ];
-
-  const handleInputChange = (field: keyof FormData, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      [field]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: ''
-      }));
-    }
+  // Initialize form data
+  const initialFormData = {
+    name: '',
+    description: '',
+    images: [],
+    prices: [],
+    whippingCreamOptions: [],
+    bakingTinOptions: [],
+    isActive: true,
+    defaultCreamIndex: 0,
   };
 
-  const handleAddImage = () => {
-    const newImage = prompt('Enter image URL:');
-    if (newImage && newImage.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        images: [...prev.images, newImage.trim()]
-      }));
-    }
-  };
+  // Form management hook
+  const {
+    formData,
+    errors,
+    handleInputChange,
+    validateForm: _validateForm,
+    setErrors,
+  } = useProductForm({ initialData: initialFormData });
 
-  const handleRemoveImage = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      images: prev.images.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleAddPrice = () => {
-    setFormData(prev => ({
-      ...prev,
-      prices: [...prev.prices, { weight: '', amount: 0, servings: 0 }]
-    }));
-  };
-
-  const handleUpdatePrice = (index: number, field: string, value: any) => {
-    setFormData(prev => ({
-      ...prev,
-      prices: prev.prices.map((price, i) => 
-        i === index ? { ...price, [field]: value } : price
-      )
-    }));
-  };
-
-  const handleRemovePrice = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      prices: prev.prices.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleAddWhippingCream = () => {
-    const newOption = prompt('Enter whipping cream option:');
-    if (newOption && newOption.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        whippingCreamOptions: [...prev.whippingCreamOptions, newOption.trim()]
-      }));
-    }
-  };
-
-  const handleRemoveWhippingCream = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      whippingCreamOptions: prev.whippingCreamOptions.filter((_, i) => i !== index)
-    }));
-  };
-
-  const handleAddBakingTin = () => {
-    const newOption = prompt('Enter baking tin option:');
-    if (newOption && newOption.trim()) {
-      setFormData(prev => ({
-        ...prev,
-        bakingTinOptions: [...prev.bakingTinOptions, newOption.trim()]
-      }));
-    }
-  };
-
-  const handleRemoveBakingTin = (index: number) => {
-    setFormData(prev => ({
-      ...prev,
-      bakingTinOptions: prev.bakingTinOptions.filter((_, i) => i !== index)
-    }));
-  };
-
+  // Step validation function
   const validateStep = (step: number): boolean => {
     const newErrors: Record<string, string> = {};
 
     switch (step) {
       case 1:
-        if (!formData.name.trim()) {
+        if (!formData.name?.trim()) {
           newErrors.name = 'Product name is required';
         }
-        if (!formData.description.trim()) {
+        if (!formData.description?.trim()) {
           newErrors.description = 'Product description is required';
         }
         break;
       case 2:
-        if (formData.images.length === 0) {
+        if (!formData.images || formData.images.length === 0) {
           newErrors.images = 'At least one image is required';
         }
         break;
       case 3:
-        if (formData.prices.length === 0) {
+        if (!formData.prices || formData.prices.length === 0) {
           newErrors.prices = 'At least one price is required';
         }
         break;
     }
 
-    setErrors(newErrors);
+    // Update errors using the hook's setErrors
+    if (Object.keys(newErrors).length > 0) {
+      // Merge new errors with existing ones
+      setErrors(prev => ({ ...prev, ...newErrors }));
+    } else {
+      // Clear step-specific errors when valid
+      setErrors(prev => {
+        const updated = { ...prev };
+        ['name', 'description', 'images', 'prices'].forEach(key => {
+          if (newErrors[key] === undefined && updated[key]) {
+            delete updated[key];
+          }
+        });
+        return updated;
+      });
+    }
+
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleNext = () => {
-    if (validateStep(currentStep)) {
-      setCurrentStep(prev => Math.min(prev + 1, steps.length));
+  // Step navigation hook
+  const {
+    currentStep,
+    handleNext,
+    handlePrevious,
+    isLastStep: _isLastStep,
+  } = useProductSteps({
+    steps,
+    validateStep,
+  });
+
+  // Image management hook
+  const {
+    handleAddImage: handleAddImageHook,
+    handleRemoveImage,
+  } = useProductImages({
+    images: formData.images || [],
+    onUpdate: (images) => handleInputChange('images', images),
+  });
+
+  // Handle image add with prompt (preserving original behavior)
+  const handleAddImage = () => {
+    const newImage = prompt('Enter image URL:');
+    if (newImage && newImage.trim()) {
+      handleAddImageHook(newImage);
     }
   };
 
-  const handlePrevious = () => {
-    setCurrentStep(prev => Math.max(prev - 1, 1));
+  // Pricing management hook
+  const {
+    handleAddPrice,
+    handleUpdatePrice,
+    handleRemovePrice,
+  } = useProductPricing({
+    prices: formData.prices || [],
+    onUpdate: (prices) => handleInputChange('prices', prices),
+  });
+
+  // Cream options management hook
+  const {
+    showCreamDialog: _showCreamDialog,
+    newCreamName: _newCreamName,
+    newCreamCost: _newCreamCost,
+    setNewCreamName: _setNewCreamName,
+    setNewCreamCost: _setNewCreamCost,
+    openAddCreamDialog: _openAddCreamDialog,
+    closeAddCreamDialog: _closeAddCreamDialog,
+    saveCreamFromDialog: _saveCreamFromDialog,
+    handleUpdateCreamField: _handleUpdateCreamField,
+    handleRemoveCream,
+  } = useProductCreamOptions({
+    creamOptions: formData.whippingCreamOptions || [],
+    defaultCreamIndex: formData.defaultCreamIndex,
+    onUpdate: (options) => handleInputChange('whippingCreamOptions', options),
+    onDefaultChange: (index) => handleInputChange('defaultCreamIndex', index),
+  });
+
+  // Handle baking tin addition with prompt (preserving original behavior)
+  const handleAddBakingTin = () => {
+    const newOption = prompt('Enter baking tin option:');
+    if (newOption && newOption.trim()) {
+      handleInputChange('bakingTinOptions', [...(formData.bakingTinOptions || []), newOption.trim()]);
+    }
+  };
+
+  const handleRemoveBakingTin = (index: number) => {
+    handleInputChange('bakingTinOptions', (formData.bakingTinOptions || []).filter((_, i) => i !== index));
+  };
+
+  // Handle whipping cream addition with prompt for step 4 (preserving original behavior)
+  const handleAddWhippingCreamPrompt = () => {
+    const newOption = prompt('Enter whipping cream option:');
+    if (newOption && newOption.trim()) {
+      handleInputChange('whippingCreamOptions', [...(formData.whippingCreamOptions || []), newOption.trim()]);
+    }
   };
 
   const handleSubmit = async () => {
@@ -176,17 +178,17 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
       return;
     }
 
-  try {
+    try {
       const productData: AdminProduct = {
         id: `prod_${Date.now()}`,
-        name: formData.name,
-        description: formData.description,
-        images: formData.images,
-        prices: formData.prices,
-        whippingCreamOptions: formData.whippingCreamOptions,
-        bakingTinOptions: formData.bakingTinOptions,
-        defaultCreamIndex: 0,
-        isActive: formData.isActive,
+        name: formData.name || '',
+        description: formData.description || '',
+        images: formData.images || [],
+        prices: formData.prices || [],
+        whippingCreamOptions: formData.whippingCreamOptions || [],
+        bakingTinOptions: formData.bakingTinOptions || [],
+        defaultCreamIndex: formData.defaultCreamIndex || 0,
+        isActive: formData.isActive ?? true,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       };
@@ -194,8 +196,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
       await createProduct(productData);
       onSuccess?.();
       onClose();
-  } catch (error) {
-      // Surface failure to UI minimally without console noise
+    } catch (error) {
       alert('Error adding product. Please try again.');
     }
   };
@@ -209,7 +210,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
               <label className="block text-sm font-medium text-gray-700 mb-2">Product Name *</label>
               <input
                 type="text"
-                value={formData.name}
+                value={formData.name || ''}
                 onChange={(e) => handleInputChange('name', e.target.value)}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c7b8ea] focus:border-transparent ${
                   errors.name ? 'border-red-500' : 'border-gray-300'
@@ -222,7 +223,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
             <div>
               <label className="block text-sm font-medium text-gray-700 mb-2">Description *</label>
               <textarea
-                value={formData.description}
+                value={formData.description || ''}
                 onChange={(e) => handleInputChange('description', e.target.value)}
                 rows={4}
                 className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-[#c7b8ea] focus:border-transparent ${
@@ -239,7 +240,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
         return (
           <div className="space-y-6">
             <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
-              {formData.images.map((image, index) => (
+              {(formData.images || []).map((image, index) => (
                 <div key={index} className="relative group">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -271,7 +272,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
       case 3:
         return (
           <div className="space-y-4">
-            {formData.prices.map((price, index) => (
+            {(formData.prices || []).map((price, index) => (
               <div key={index} className="flex items-center space-x-4 p-4 border border-gray-200 rounded-lg">
                 <div className="flex-1">
                   <label className="block text-sm font-medium text-gray-700 mb-1">Weight</label>
@@ -329,11 +330,11 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
             <div>
               <h4 className="text-lg font-medium text-gray-900 mb-4">Whipping Cream Options</h4>
               <div className="space-y-2 mb-4">
-                {formData.whippingCreamOptions.map((option, index) => (
+                {(formData.whippingCreamOptions || []).map((option, index) => (
                   <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
                     <span className="text-gray-700">{option}</span>
                     <button
-                      onClick={() => handleRemoveWhippingCream(index)}
+                      onClick={() => handleRemoveCream(index)}
                       className="p-1 text-red-500 hover:bg-red-100 rounded"
                     >
                       <X className="w-4 h-4" />
@@ -342,7 +343,7 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
                 ))}
               </div>
               <button
-                onClick={handleAddWhippingCream}
+                onClick={handleAddWhippingCreamPrompt}
                 className="flex items-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#c7b8ea] hover:text-[#c7b8ea] transition-colors"
               >
                 <Plus className="w-4 h-4 mr-2" />
@@ -350,29 +351,11 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
               </button>
             </div>
 
-            <div>
-              <h4 className="text-lg font-medium text-gray-900 mb-4">Baking Tin Options</h4>
-              <div className="space-y-2 mb-4">
-                {formData.bakingTinOptions.map((option, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <span className="text-gray-700">{option}</span>
-                    <button
-                      onClick={() => handleRemoveBakingTin(index)}
-                      className="p-1 text-red-500 hover:bg-red-100 rounded"
-                    >
-                      <X className="w-4 h-4" />
-                    </button>
-                  </div>
-                ))}
-              </div>
-              <button
-                onClick={handleAddBakingTin}
-                className="flex items-center px-4 py-2 border-2 border-dashed border-gray-300 rounded-lg text-gray-500 hover:border-[#c7b8ea] hover:text-[#c7b8ea] transition-colors"
-              >
-                <Plus className="w-4 h-4 mr-2" />
-                Add Baking Tin Option
-              </button>
-            </div>
+            <ProductBakingTinOptions
+              bakingTinOptions={formData.bakingTinOptions || []}
+              onAdd={handleAddBakingTin}
+              onRemove={handleRemoveBakingTin}
+            />
           </div>
         );
 
@@ -391,17 +374,14 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
               </select>
             </div>
 
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-              <h4 className="font-medium text-blue-900 mb-2">Product Summary</h4>
-              <div className="text-sm text-blue-800 space-y-1">
-                <p><strong>Name:</strong> {formData.name}</p>
-                <p><strong>Images:</strong> {formData.images.length} image(s)</p>
-                <p><strong>Price Points:</strong> {formData.prices.length}</p>
-                <p><strong>Whipping Cream Options:</strong> {formData.whippingCreamOptions.length}</p>
-                <p><strong>Baking Tin Options:</strong> {formData.bakingTinOptions.length}</p>
-                <p><strong>Status:</strong> {formData.isActive ? 'Active' : 'Inactive'}</p>
-              </div>
-            </div>
+            <ProductSummary
+              name={formData.name || ''}
+              imagesCount={(formData.images || []).length}
+              pricesCount={(formData.prices || []).length}
+              whippingCreamOptionsCount={(formData.whippingCreamOptions || []).length}
+              bakingTinOptionsCount={(formData.bakingTinOptions || []).length}
+              isActive={formData.isActive ?? true}
+            />
           </div>
         );
 
@@ -413,90 +393,28 @@ export default function AddProductForm({ onClose, onSuccess }: AddProductFormPro
   return (
     <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
       <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full mx-4 max-h-[90vh] overflow-hidden">
-        {/* Header */}
-        <div className="flex items-center justify-between p-6 border-b border-gray-200">
-          <div>
-            <h2 className="text-xl font-semibold text-gray-900">Add New Product</h2>
-            <p className="text-gray-600">Step {currentStep} of {steps.length}: {steps[currentStep - 1].title}</p>
-          </div>
-          <button
-            onClick={onClose}
-            className="text-gray-400 hover:text-gray-600"
-          >
-            <X className="w-6 h-6" />
-          </button>
-        </div>
+        <ProductFormModalHeader
+          title="Add New Product"
+          currentStep={currentStep}
+          steps={steps}
+          onClose={onClose}
+        />
 
-        {/* Progress Bar */}
-        <div className="px-6 py-4 bg-gray-50">
-          <div className="flex items-center justify-between">
-            {steps.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium ${
-                  currentStep > step.id 
-                    ? 'bg-green-500 text-white' 
-                    : currentStep === step.id 
-                    ? 'bg-[#c7b8ea] text-white' 
-                    : 'bg-gray-200 text-gray-600'
-                }`}>
-                  {currentStep > step.id ? <Check className="w-4 h-4" /> : step.id}
-                </div>
-                <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-900">{step.title}</p>
-                  <p className="text-xs text-gray-500">{step.description}</p>
-                </div>
-                {index < steps.length - 1 && (
-                  <div className={`w-12 h-0.5 mx-4 ${
-                    currentStep > step.id ? 'bg-green-500' : 'bg-gray-200'
-                  }`} />
-                )}
-              </div>
-            ))}
-          </div>
-        </div>
+        <ProductFormStepper steps={steps} currentStep={currentStep} />
 
-        {/* Content */}
         <div className="p-6 overflow-y-auto max-h-96">
           {renderStepContent()}
         </div>
 
-        {/* Footer */}
-        <div className="flex items-center justify-between p-6 border-t border-gray-200">
-          <button
-            onClick={handlePrevious}
-            disabled={currentStep === 1}
-            className="flex items-center px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Previous
-          </button>
-
-          <div className="flex space-x-3">
-            <button
-              onClick={onClose}
-              className="px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50"
-            >
-              Cancel
-            </button>
-            {currentStep < steps.length ? (
-              <button
-                onClick={handleNext}
-                className="flex items-center px-4 py-2 bg-[#c7b8ea] text-white rounded-lg hover:bg-[#b5a3e8]"
-              >
-                Next
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </button>
-            ) : (
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex items-center px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50"
-              >
-                {loading ? 'Creating...' : 'Create Product'}
-              </button>
-            )}
-          </div>
-        </div>
+        <ProductFormModalFooter
+          currentStep={currentStep}
+          totalSteps={steps.length}
+          isLoading={loading}
+          onPrevious={handlePrevious}
+          onNext={handleNext}
+          onSubmit={handleSubmit}
+          onCancel={onClose}
+        />
       </div>
     </div>
   );

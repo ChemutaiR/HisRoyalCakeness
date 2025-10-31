@@ -2,20 +2,23 @@
 
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { signupSchema } from '@/lib/validation/auth';
 // State management imports removed - will be replaced with Redux
 
 export default function SignupPage() {
   const [form, setForm] = useState({
     name: '',
     email: '',
+    phone: '',
     password: '',
     confirmPassword: '',
   });
+  const [errors, setErrors] = useState<Record<string, string>>({});
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   
   // TODO: Replace with Redux state management
-  const signup = async (userData: { firstName: string; lastName: string; email: string; password: string; confirmPassword: string }) => {
+  const signup = async (userData: { firstName: string; lastName: string; email: string; phone?: string; password: string; confirmPassword: string }) => {
     // Temporary placeholder - will be replaced with actual auth logic
     // console.log('Signup attempt:', userData);
     // Simulate API call
@@ -29,16 +32,16 @@ export default function SignupPage() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
-    if (form.password !== form.confirmPassword) {
-      addNotification({
-        type: 'error',
-        title: 'Password Mismatch',
-        message: 'Passwords do not match. Please try again.',
-        duration: 5000
-      });
+    const parsed = signupSchema.safeParse(form);
+    if (!parsed.success) {
+      const fieldErrors: Record<string, string> = {};
+      const flat = parsed.error.flatten().fieldErrors as Record<string, string[]>;
+      Object.entries(flat).forEach(([k, v]) => { if (v && v.length) fieldErrors[k] = v[0]; });
+      setErrors(fieldErrors);
+      addNotification({ type: 'error', title: 'Invalid form', message: 'Please correct the highlighted fields.', duration: 4000 });
       return;
     }
+    setErrors({});
 
     setIsLoading(true);
 
@@ -47,6 +50,7 @@ export default function SignupPage() {
         firstName: form.name.split(' ')[0] || '',
         lastName: form.name.split(' ').slice(1).join(' ') || '',
         email: form.email,
+        phone: form.phone?.trim() || undefined,
         password: form.password,
         confirmPassword: form.confirmPassword
       });
@@ -112,6 +116,28 @@ export default function SignupPage() {
           >
             Email
           </label>
+          {errors.email && <p className="mt-1 text-xs text-red-600">{errors.email}</p>}
+        </div>
+        <div className="relative pt-2">
+          <input
+            id="phone"
+            type="tel"
+            inputMode="tel"
+            autoComplete="tel"
+            className={`peer w-full border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2 text-base focus:outline-none focus:ring-0 focus:border-[#c7b8ea] transition-all`}
+            value={form.phone}
+            onChange={e => setForm({ ...form, phone: e.target.value })}
+            placeholder=""
+          />
+          <label
+            htmlFor="phone"
+            className={`absolute left-0 top-2 text-gray-500 text-sm font-normal pointer-events-none transition-all duration-200
+              peer-focus:-top-4 peer-focus:text-sm peer-focus:text-[#c7b8ea]
+              ${form.phone ? '-top-4 text-sm text-[#c7b8ea]' : ''}`}
+          >
+            Phone (optional)
+          </label>
+          {errors.phone && <p className="mt-1 text-xs text-red-600">{errors.phone}</p>}
         </div>
         <div className="relative pt-2">
           <input
@@ -131,6 +157,7 @@ export default function SignupPage() {
           >
             Password
           </label>
+          {errors.password && <p className="mt-1 text-xs text-red-600">{errors.password}</p>}
         </div>
         <div className="relative pt-2">
           <input
@@ -150,6 +177,7 @@ export default function SignupPage() {
           >
             Confirm Password
           </label>
+          {errors.confirmPassword && <p className="mt-1 text-xs text-red-600">{errors.confirmPassword}</p>}
         </div>
         <button
           type="submit"

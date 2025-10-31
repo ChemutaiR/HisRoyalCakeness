@@ -8,12 +8,13 @@ export interface AdminPromotion {
   discountValue: number;
   startDate: string;
   endDate: string;
-  status: 'Active' | 'Inactive' | 'Expired';
+  status: 'Active' | 'Paused' | 'Scheduled' | 'Expired';
   usageCount: number;
   maxUsage: number;
   applicableProducts: string[];
   minOrderValue: number;
   code: string;
+  image?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -32,7 +33,7 @@ export interface PromotionFormData {
 }
 
 export interface PromotionFilters {
-  status?: 'Active' | 'Inactive' | 'Expired';
+  status?: 'Active' | 'Paused' | 'Scheduled' | 'Expired';
   discountType?: 'Percentage' | 'Fixed Amount';
   dateFrom?: string;
   dateTo?: string;

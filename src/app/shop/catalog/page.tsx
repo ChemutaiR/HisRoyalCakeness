@@ -1,15 +1,30 @@
 'use client';
 
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, Suspense } from 'react';
 import ProductCard from '@/components/ProductCard';
 import { Search } from 'lucide-react';
 import { useCatalog } from '@/hooks/shop';
 import { applyProductFilters, type ProductFilters } from '@/utils/catalog';
 import { getCakeMinPrice, getCakeMaxPrice } from '@/utils/catalog/products';
 import { Input } from '@/components/ui/input';
+import { useSearchParams, useRouter } from 'next/navigation';
+import { getPromotionDetail } from '@/utils/promotions';
+import { useCartStore } from '@/store/slices/shop/cart';
 
-export default function CatalogPage() {
+function CatalogContent() {
   const { cakes, loading, error, filters, setFilters, clearFilters } = useCatalog();
+  const searchParams = useSearchParams();
+  const router = useRouter();
+  const setActivePromotion = useCartStore(state => state.setActivePromotion);
+  const promoId = searchParams.get('promoId');
+  const promoDetail = getPromotionDetail(promoId);
+
+  // Store active promotion in cart when promoId changes
+  useEffect(() => {
+    if (promoId && promoDetail) {
+      setActivePromotion(promoId);
+    }
+  }, [promoId, promoDetail, setActivePromotion]);
 
   // Load cakes on component mount
   useEffect(() => {
@@ -23,9 +38,20 @@ export default function CatalogPage() {
     const productFilters: ProductFilters = {
       ...filters
     };
-    
-    return applyProductFilters(cakes, productFilters);
-  }, [cakes, filters]);
+    let base = applyProductFilters(cakes, productFilters);
+    if (promoDetail) {
+      const names = new Set(promoDetail.applicableProductNames.map(n => n.toLowerCase()));
+      base = base.filter(c => names.has(c.name.toLowerCase()));
+    }
+    return base;
+  }, [cakes, filters, promoDetail]);
+
+  const clearPromotion = () => {
+    const params = new URLSearchParams(searchParams.toString());
+    params.delete('promoId');
+    setActivePromotion(null);
+    router.push(`/shop/catalog${params.toString() ? `?${params.toString()}` : ''}`);
+  };
 
   const handleFilterChange = (newFilters: Partial<ProductFilters>) => {
     setFilters(newFilters);
@@ -71,6 +97,19 @@ export default function CatalogPage() {
           <h1 className="text-2xl font-medium text-gray-800 mb-0.5 tracking-wide">Our Cake Collection</h1>
           <p className="text-sm text-gray-500 leading-relaxed">Discover our delicious selection of handcrafted cakes</p>
         </div>
+
+        {/* Promotion banner */}
+        {promoDetail && (
+          <div className="mb-6 rounded-xl border border-[#e6e0fa] bg-[#f7f5ff] px-4 py-3 flex items-start justify-between gap-3">
+            <div>
+              <div className="text-sm text-[#6c56b9] font-semibold">{promoDetail.title}</div>
+              {promoDetail.description && (
+                <div className="text-sm text-gray-700 mt-0.5">{promoDetail.description}</div>
+              )}
+            </div>
+            <button onClick={clearPromotion} className="text-xs text-[#6c56b9] underline hover:text-[#4f3ea6]">Clear</button>
+          </div>
+        )}
 
         {/* Search Bar */}
               <div className="mb-6">
@@ -124,5 +163,20 @@ export default function CatalogPage() {
             )}
       </div>
     </div>
+  );
+}
+
+export default function CatalogPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex-1 flex items-center justify-center py-8">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#c7b8ea] mx-auto mb-4"></div>
+          <p className="text-gray-600">Loading products...</p>
+        </div>
+      </div>
+    }>
+      <CatalogContent />
+    </Suspense>
   );
 } 

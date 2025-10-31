@@ -6,12 +6,12 @@ import { Save, Truck, MapPin, Plus, Trash2 } from 'lucide-react';
 
 export default function DeliverySettingsPage() {
   const [deliveryZones, setDeliveryZones] = useState([
-    { id: 1, name: 'Nairobi CBD', fee: 500, estimatedTime: '30-45 min', active: true },
-    { id: 2, name: 'Westlands', fee: 600, estimatedTime: '45-60 min', active: true },
-    { id: 3, name: 'Karen', fee: 800, estimatedTime: '60-90 min', active: false }
+    { id: 1, name: 'Nairobi CBD', fee: 500, active: true },
+    { id: 2, name: 'Westlands', fee: 600, active: true },
+    { id: 3, name: 'Karen', fee: 800, active: false }
   ]);
 
-  const [newZone, setNewZone] = useState({ name: '', fee: '', estimatedTime: '' });
+  const [newZone, setNewZone] = useState({ name: '', fee: '' });
   const [showAddZone, setShowAddZone] = useState(false);
 
 
@@ -25,16 +25,15 @@ export default function DeliverySettingsPage() {
   };
 
   const handleAddZone = () => {
-    if (newZone.name && newZone.fee && newZone.estimatedTime) {
+    if (newZone.name && newZone.fee) {
       const zone = {
         id: Date.now(),
         name: newZone.name,
         fee: parseInt(newZone.fee),
-        estimatedTime: newZone.estimatedTime,
         active: true
       };
       setDeliveryZones(prev => [...prev, zone]);
-      setNewZone({ name: '', fee: '', estimatedTime: '' });
+      setNewZone({ name: '', fee: '' });
       setShowAddZone(false);
       setHasChanges(true);
     }
@@ -94,7 +93,7 @@ export default function DeliverySettingsPage() {
           {showAddZone && (
             <div className="bg-gray-50 p-4 rounded-lg mb-4">
               <h4 className="font-medium text-gray-800 mb-3">Add New Delivery Zone</h4>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-1">Zone Name</label>
                   <input
@@ -112,16 +111,6 @@ export default function DeliverySettingsPage() {
                     value={newZone.fee}
                     onChange={(e) => setNewZone(prev => ({ ...prev, fee: e.target.value }))}
                     placeholder="500"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]"
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Estimated Time</label>
-                  <input
-                    type="text"
-                    value={newZone.estimatedTime}
-                    onChange={(e) => setNewZone(prev => ({ ...prev, estimatedTime: e.target.value }))}
-                    placeholder="30-45 min"
                     className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#c7b8ea]"
                   />
                 </div>
@@ -153,7 +142,7 @@ export default function DeliverySettingsPage() {
                   </div>
                   <div>
                     <h4 className="font-medium text-gray-900">{zone.name}</h4>
-                    <p className="text-sm text-gray-500">KES {zone.fee} • {zone.estimatedTime}</p>
+                    <p className="text-sm text-gray-500">KES {zone.fee}</p>
                   </div>
                 </div>
                 <div className="flex items-center gap-4">

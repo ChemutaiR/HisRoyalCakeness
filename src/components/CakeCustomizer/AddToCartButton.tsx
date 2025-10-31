@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ShoppingCart, Check } from 'lucide-react';
 import { useCart } from '@/hooks/shop/useCart';
+import { areCustomizationsEqual } from '@/utils/cart/comparison';
 import { CustomizationOptions, Decoration } from '@/types/shop/catalog';
 
 interface Size {
@@ -56,9 +57,19 @@ export default function AddToCartButton({
   const [isAdded, setIsAdded] = useState(false);
   
   // Use cart hook for real cart functionality
-  const { addItem, isLoading, error } = useCart();
+  const { addItem, updateQuantity, removeItem, items, isLoading, error } = useCart();
 
   const isDisabled = !selectedSize || !selectedCream || isAdding || isLoading;
+
+  // Find if this customization already exists in cart
+  const existing = items.find(it => it.cake.id === cake.id && areCustomizationsEqual(it.customization as any, {
+    selectedSize,
+    selectedCream,
+    selectedContainerType: { name: 'Circle', value: 'circle' },
+    selectedDecorations,
+    customNotes,
+    uploadedImages,
+  } as any));
 
   const handleAddToCart = async () => {
     if (isDisabled) return;
@@ -107,34 +118,66 @@ export default function AddToCartButton({
 
   return (
     <div className="bg-white p-6 rounded-lg border border-gray-200">
-      <button
-        onClick={handleAddToCart}
-        disabled={isDisabled}
-        className={`w-full py-4 px-6 rounded-full text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
-          isDisabled
-            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-            : isAdded
-            ? 'bg-green-500 text-white'
-            : 'bg-[#c7b8ea] text-black hover:bg-[#c7b8ea]/80 shadow-lg hover:shadow-xl'
-        }`}
-      >
-        {(isAdding || isLoading) ? (
-          <>
-            <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
-            <span>Adding to Cart...</span>
-          </>
-        ) : isAdded ? (
-          <>
-            <Check className="w-5 h-5" />
-            <span>Added to Cart!</span>
-          </>
-        ) : (
-          <>
-            <ShoppingCart className="w-5 h-5" />
-            <span>Add to Cart - KES {totalPrice.toLocaleString()}</span>
-          </>
-        )}
-      </button>
+      {existing ? (
+        <div className="flex items-center justify-between">
+          <div className="flex items-center rounded-full border border-gray-300">
+            <button
+              className="px-4 py-2 text-lg"
+              onClick={async () => {
+                const newQty = existing.quantity - 1;
+                if (newQty <= 0) {
+                  await removeItem(existing.id);
+                } else {
+                  await updateQuantity(existing.id, newQty);
+                }
+              }}
+              disabled={isLoading}
+            >
+              -
+            </button>
+            <span className="px-4 py-2 min-w-[3rem] text-center font-semibold">{existing.quantity}</span>
+            <button
+              className="px-4 py-2 text-lg"
+              onClick={async () => {
+                await updateQuantity(existing.id, existing.quantity + 1);
+              }}
+              disabled={isLoading}
+            >
+              +
+            </button>
+          </div>
+          <span className="text-sm text-gray-700">KES {totalPrice.toLocaleString()} each</span>
+        </div>
+      ) : (
+        <button
+          onClick={handleAddToCart}
+          disabled={isDisabled}
+          className={`w-full py-4 px-6 rounded-full text-sm font-semibold transition-all duration-200 flex items-center justify-center space-x-2 ${
+            isDisabled
+              ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              : isAdded
+              ? 'bg-green-500 text-white'
+              : 'bg-[#c7b8ea] text-black hover:bg-[#c7b8ea]/80 shadow-lg hover:shadow-xl'
+          }`}
+        >
+          {(isAdding || isLoading) ? (
+            <>
+              <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin"></div>
+              <span>Adding to Cart...</span>
+            </>
+          ) : isAdded ? (
+            <>
+              <Check className="w-5 h-5" />
+              <span>Added to Cart!</span>
+            </>
+          ) : (
+            <>
+              <ShoppingCart className="w-5 h-5" />
+              <span>Add to Cart - KES {totalPrice.toLocaleString()}</span>
+            </>
+          )}
+        </button>
+      )}
 
       {error && (
         <p className="text-sm text-red-500 text-center mt-2">

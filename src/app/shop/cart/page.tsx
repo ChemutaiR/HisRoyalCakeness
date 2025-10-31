@@ -20,7 +20,8 @@ export default function CartPage() {
     error,
     updateQuantity,
     removeItem,
-    clearCart
+    clearCart,
+    cartSummary
   } = useCart();
 
   const handleUpdateQuantity = async (itemId: string, quantity: number) => {
@@ -248,12 +249,31 @@ export default function CartPage() {
                   <span className="text-sm text-gray-500 leading-relaxed">Subtotal ({totalItems} items)</span>
                   <span className="text-sm font-semibold text-gray-900 tracking-tight">KSH {subtotal.toLocaleString()}</span>
                 </div>
-                <div className="border-t pt-2">
-                  <div className="flex justify-between font-semibold text-lg tracking-tight text-gray-900">
-                    <span>Total</span>
-                    <span>KSH {total.toLocaleString()}</span>
-                  </div>
-                </div>
+                {(() => {
+                  const discount = cartSummary?.discountAmount || 0;
+                  const finalTotal = subtotal - discount + (subtotal >= 2000 ? 0 : 200);
+                  return discount > 0 ? (
+                    <>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-green-600">Promotion Discount</span>
+                        <span className="text-green-600 font-semibold">-KSH {discount.toLocaleString()}</span>
+                      </div>
+                      <div className="border-t pt-2">
+                        <div className="flex justify-between font-semibold text-lg tracking-tight text-gray-900">
+                          <span>Total</span>
+                          <span>KSH {finalTotal.toLocaleString()}</span>
+                        </div>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="border-t pt-2">
+                      <div className="flex justify-between font-semibold text-lg tracking-tight text-gray-900">
+                        <span>Total</span>
+                        <span>KSH {total.toLocaleString()}</span>
+                      </div>
+                    </div>
+                  );
+                })()}
               </div>
               <Link 
                 href="/shop/checkout"

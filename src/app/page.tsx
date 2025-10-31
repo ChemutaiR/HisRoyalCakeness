@@ -7,6 +7,7 @@ import Footer from '@/components/Footer';
 import ProductCard from '@/components/ProductCard';
 import InfiniteScrollCards from '@/components/InfiniteScrollCards';
 import { useCatalogStore } from '@/store/slices/shop/catalog';
+import Promotions from '@/components/home/Promotions';
 
 const primaryButton =
   'bg-[#c7b8ea] text-black text-base px-8 py-3 rounded-full font-semibold transition-colors hover:bg-[#c7b8ea]/80 shadow';
@@ -18,7 +19,8 @@ export default function Page() {
   // Load cakes on mount
   useEffect(() => {
     loadCakes();
-  }, [loadCakes]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // loadCakes is stable from Zustand store
 
   const handleShopNow = () => {
     router.push('/shop/catalog');
@@ -32,7 +34,7 @@ export default function Page() {
       <Navbar />
       
       {/* Hero Section */}
-      <section className="relative h-[600px] flex items-center justify-center bg-[url('/background.jpg')] bg-cover bg-top sm:bg-center bg-no-repeat">
+      <section className="relative h-[520px] md:h-[640px] flex items-center justify-center bg-[url('/background.jpg')] bg-cover bg-top sm:bg-center bg-no-repeat">
         <div className="absolute inset-0 bg-black/50 z-10" />
         <div className="relative z-20 text-center text-white px-4">
           <h1 className="text-4xl md:text-6xl font-light italic mb-4 font-pacifico">A Slice Above the Rest</h1>
@@ -42,6 +44,9 @@ export default function Page() {
           </button>
         </div>
       </section>
+
+      {/* Promotions Section */}
+      <Promotions />
 
       {/* Featured Products */}
       <section className="bg-gray-50 py-16">

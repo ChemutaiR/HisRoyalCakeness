@@ -18,6 +18,11 @@ export const deliveryValidationSchema = z.object({
       .optional(),
     
     country: z.string().optional().default('Kenya'),
+    
+    phone: z
+      .string()
+      .min(1, 'Phone number is required')
+      .regex(/^(\+?254|0)[17]\d{8}$/, 'Please enter a valid Kenyan phone number (e.g., 0712345678 or +254712345678)'),
   }),
   
   deliveryDate: z

@@ -12,7 +12,8 @@ export const paymentValidationSchema = z.object({
   
   agreeToTerms: z
     .boolean()
-    .refine((val) => val === true, 'You must agree to the terms and conditions'),
+    .optional()
+    .default(true),
   
   subscribeToNewsletter: z
     .boolean()

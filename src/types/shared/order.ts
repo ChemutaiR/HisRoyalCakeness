@@ -48,6 +48,7 @@ export interface Address {
   street: string;
   directions?: string;
   country: string;
+  phone?: string;
 }
 
 export interface DeliverySlot {

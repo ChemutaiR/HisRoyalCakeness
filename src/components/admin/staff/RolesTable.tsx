@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from 'react';
-import { Users, Shield, Edit, Trash2, Search, Eye, X } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Users, Shield, Edit, Trash2, Search, Eye, X, Plus } from 'lucide-react';
 
 interface Role {
   id: string;
@@ -24,6 +25,7 @@ interface StaffMember {
 }
 
 export default function RolesTable() {
+  const router = useRouter();
   const [roles, setRoles] = useState<Role[]>([
     {
       id: 'admin',
@@ -151,9 +153,18 @@ export default function RolesTable() {
           <h2 className="text-2xl font-bold mb-2">Roles & Permissions</h2>
           <p className="text-gray-600 text-base">Manage staff roles and track permission assignments.</p>
         </div>
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-          <Users className="w-4 h-4" />
-          <span>Total Roles: {roles.length}</span>
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <Users className="w-4 h-4" />
+            <span>Total Roles: {roles.length}</span>
+          </div>
+          <button
+            onClick={() => router.push('/admin/staff/permissions/create')}
+            className="bg-[#c7b8ea] text-black px-4 py-2 rounded-lg font-semibold hover:bg-[#c7b8ea]/80 transition-colors flex items-center gap-2"
+          >
+            <Plus className="w-4 h-4" />
+            Add Role
+          </button>
         </div>
       </div>
 
@@ -258,6 +269,7 @@ export default function RolesTable() {
                       <Eye className="w-4 h-4" />
                     </button>
                     <button
+                      onClick={() => router.push(`/admin/staff/permissions/${role.id}`)}
                       className="text-indigo-600 hover:text-indigo-900"
                       title="Edit Role"
                     >

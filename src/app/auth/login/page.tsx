@@ -62,12 +62,12 @@ export default function LoginPage() {
         <div className="relative pt-2">
           <input
             id="email"
-            type="text"
+            type="email"
             className={`peer w-full border-0 border-b-2 border-gray-300 bg-transparent px-0 py-2 text-base focus:outline-none focus:ring-0 focus:border-[#c7b8ea] transition-all`}
             value={form.email}
             onChange={e => setForm({ ...form, email: e.target.value })}
             required
-            autoComplete="username"
+            autoComplete="email"
           />
           <label
             htmlFor="email"
@@ -75,7 +75,7 @@ export default function LoginPage() {
               peer-focus:-top-4 peer-focus:text-sm peer-focus:text-[#c7b8ea]
               ${form.email ? '-top-4 text-sm text-[#c7b8ea]' : ''}`}
           >
-            Username or Email
+            Email
           </label>
         </div>
         <div className="relative pt-2">
@@ -96,6 +96,15 @@ export default function LoginPage() {
           >
             Password
           </label>
+        </div>
+        <div className="flex items-center justify-between text-sm">
+          <button
+            type="button"
+            onClick={() => router.push('/auth/forgot-password')}
+            className="text-[#7a63c2] hover:text-[#5d49a8] underline"
+          >
+            Forgot password?
+          </button>
         </div>
         <button
           type="submit"

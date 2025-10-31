@@ -1,4 +1,6 @@
-import { useCallback, useMemo } from 'react';
+'use client';
+import { useCallback } from 'react';
+import { useShallow } from 'zustand/react/shallow';
 import { useCartStore } from '@/store/slices/shop/cart';
 import {
   selectCartItems,
@@ -68,46 +70,16 @@ export function useCart(): UseCartReturn {
   const error = useCartStore(selectError);
   const lastUpdated = useCartStore(selectLastUpdated);
   
-  // Select computed state with useMemo to prevent infinite loops
-  const cartSummary = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectCartSummary(state);
-  }, []);
-
-  const itemCount = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectCartItemCount(state);
-  }, []);
-
-  const isEmpty = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectIsCartEmpty(state);
-  }, []);
-
-  const subtotal = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectCartSubtotal(state);
-  }, []);
-
-  const deliveryFee = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectDeliveryFee(state);
-  }, []);
-
-  const total = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectCartTotal(state);
-  }, []);
-
-  const displayData = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectCartDisplayData(state);
-  }, []);
-
-  const validation = useMemo(() => {
-    const state = useCartStore.getState();
-    return selectCartValidation(state);
-  }, []);
+  // Select computed state reactively
+  // Use shallow equality for object-returning selectors to prevent infinite re-renders
+  const cartSummary = useCartStore(useShallow(state => selectCartSummary(state)));
+  const itemCount = useCartStore(selectCartItemCount);
+  const isEmpty = useCartStore(selectIsCartEmpty);
+  const subtotal = useCartStore(selectCartSubtotal);
+  const deliveryFee = useCartStore(selectDeliveryFee);
+  const total = useCartStore(selectCartTotal);
+  const displayData = useCartStore(useShallow(state => selectCartDisplayData(state)));
+  const validation = useCartStore(useShallow(state => selectCartValidation(state)));
   
   // Get actions directly from store to avoid selector issues
   const addItemAction = useCartStore(state => state.addItem);
